@@ -1,14 +1,14 @@
 [
 {
-  "modid": "examplemod",
-  "name": "Example Mod",
-  "description": "Example placeholder mod.",
+  "modid": "lootrunstatistics",
+  "name": "Lootrun Statistics",
+  "description": "Mod that takes all sort of statistics for lootrunners on Wynncraft.",
   "version": "${version}",
   "mcversion": "${mcversion}",
   "url": "",
   "updateUrl": "",
-  "authorList": ["ExampleDude"],
-  "credits": "The Forge and FML guys, for making this example",
+  "authorList": ["McPlayHD"],
+  "credits": "To all the Wynntils developers and albarv340 of the project chestcountmod",
   "logoFile": "",
   "screenshots": [],
   "dependencies": []
