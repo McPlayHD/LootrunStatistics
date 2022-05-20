@@ -8,7 +8,8 @@ Put the compiled `.jar` file into your `%appdata%/.minecraft/mods/` folder.
 
 ## TODO
 
-- [ ] count total chests
-- [ ] count dry chests / emeralds / items
-- [ ] save statistics about mythic finds
+- [x] count total chests
+- [x] count dry chests / emeralds / items
+- [x] save statistics about mythic finds
+- [ ] display statistics somehow
 - [ ] record and display chest data
