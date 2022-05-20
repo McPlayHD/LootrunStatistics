@@ -11,5 +11,7 @@ Put the compiled `.jar` file into your `%appdata%/.minecraft/mods/` folder.
 - [x] count total chests
 - [x] count dry chests / emeralds / items
 - [x] save statistics about mythic finds
-- [ ] display statistics somehow
+- [x] import stats from Chestcountmod and Wynntils
+- [x] created `/dry` and `/lastmythic` commands
+- [ ] show chest count in inventory
 - [ ] record and display chest data
