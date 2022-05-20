@@ -6,6 +6,8 @@ A mod for Wynncraft that records your lootrun statistics.
 
 Put the compiled `.jar` file into your `%appdata%/.minecraft/mods/` folder.
 
+**Not compatible with chestcountmod.**
+
 ## TODO
 
 - [x] count total chests
