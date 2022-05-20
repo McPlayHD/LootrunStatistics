@@ -46,6 +46,14 @@ public class MythicFindsData {
         getDryData().reset();
     }
 
+    public MythicFind getLastMythic() {
+        if (mythicFinds.isEmpty()) {
+            return null;
+        } else {
+            return mythicFinds.get(mythicFinds.size() - 1);
+        }
+    }
+
     public void save() {
         try {
             FileHelper.writeFile(file, gson.toJson(this));

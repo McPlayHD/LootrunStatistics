@@ -1,12 +1,15 @@
 package net.mcplayhd.lootrunstatistics;
 
 import net.mcplayhd.lootrunstatistics.api.WynncraftAPI;
+import net.mcplayhd.lootrunstatistics.commands.DryCommand;
+import net.mcplayhd.lootrunstatistics.commands.LastMythicCommand;
 import net.mcplayhd.lootrunstatistics.data.ChestCountData;
 import net.mcplayhd.lootrunstatistics.data.DryData;
 import net.mcplayhd.lootrunstatistics.data.MythicFindsData;
 import net.mcplayhd.lootrunstatistics.listeners.ChestOpenListener;
 import net.mcplayhd.lootrunstatistics.utils.Mythic;
 import net.minecraft.client.Minecraft;
+import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -63,6 +66,8 @@ public class LootrunStatistics {
     @EventHandler
     public void onPostInit(FMLPostInitializationEvent event) {
         MinecraftForge.EVENT_BUS.register(new ChestOpenListener());
+        ClientCommandHandler.instance.registerCommand(new LastMythicCommand());
+        ClientCommandHandler.instance.registerCommand(new DryCommand());
     }
 
 }
