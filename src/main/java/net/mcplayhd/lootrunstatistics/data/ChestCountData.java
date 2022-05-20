@@ -2,6 +2,7 @@ package net.mcplayhd.lootrunstatistics.data;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import net.mcplayhd.lootrunstatistics.data.legacy.StatsImporter;
 import net.mcplayhd.lootrunstatistics.helpers.FileHelper;
 
 import java.io.File;
@@ -18,11 +19,16 @@ public class ChestCountData {
 
     protected int totalChests;
 
+    public ChestCountData(int totalChests) {
+        this.totalChests = totalChests;
+    }
+
     public static ChestCountData load() {
         try {
             return gson.fromJson(FileHelper.readFile(file), ChestCountData.class);
         } catch (Exception ignored) {
-            return new ChestCountData();
+            // attempting to import from stats stored in chestcountmod and wynntils...
+            return StatsImporter.importChestCountData();
         }
     }
 

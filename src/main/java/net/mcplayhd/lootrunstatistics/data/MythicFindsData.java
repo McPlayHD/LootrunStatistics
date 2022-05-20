@@ -2,12 +2,12 @@ package net.mcplayhd.lootrunstatistics.data;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import net.mcplayhd.lootrunstatistics.data.legacy.StatsImporter;
 import net.mcplayhd.lootrunstatistics.helpers.FileHelper;
 import net.mcplayhd.lootrunstatistics.utils.Loc;
 import net.mcplayhd.lootrunstatistics.utils.MythicFind;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -21,13 +21,19 @@ public class MythicFindsData {
             .setPrettyPrinting()
             .create();
 
-    protected List<MythicFind> mythicFinds = new ArrayList<>();
+    protected List<MythicFind> mythicFinds;
+
+    public MythicFindsData(List<MythicFind> mythicFinds) {
+        this.mythicFinds = mythicFinds;
+    }
 
     public static MythicFindsData load() {
         try {
             return gson.fromJson(FileHelper.readFile(file), MythicFindsData.class);
         } catch (Exception ignored) {
-            return new MythicFindsData();
+            MythicFindsData data = StatsImporter.importMythicFinds();
+            data.save();
+            return data;
         }
     }
 

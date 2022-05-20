@@ -3,6 +3,7 @@ package net.mcplayhd.lootrunstatistics.utils;
 import net.mcplayhd.lootrunstatistics.enums.Tier;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 public class MythicFind {
@@ -56,7 +57,7 @@ public class MythicFind {
     }
 
     public Map<Tier, Integer> getItemsDry() {
-        return itemsDry;
+        return itemsDry == null ? new HashMap<>() : itemsDry;
     }
 
     public int getEmeraldsDry() {
