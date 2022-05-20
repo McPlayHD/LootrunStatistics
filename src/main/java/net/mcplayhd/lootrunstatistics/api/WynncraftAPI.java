@@ -1,6 +1,9 @@
 package net.mcplayhd.lootrunstatistics.api;
 
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import net.mcplayhd.lootrunstatistics.api.exceptions.APIOfflineException;
 import net.mcplayhd.lootrunstatistics.enums.ItemType;
 import net.mcplayhd.lootrunstatistics.enums.Tier;
@@ -16,11 +19,10 @@ import static net.mcplayhd.lootrunstatistics.LootrunStatistics.*;
 
 public class WynncraftAPI {
 
-    // chest count
-    private static final long API_SLOWNESS = 1000L * 60 * 10;  // the API is really slow sometimes.
     // items
     private static final Map<ItemType, Map<Tier, Set<Item>>> itemDatabase = new HashMap<>();
     private static final Set<Mythic> mythics = new HashSet<>();
+    // chest count
     private static ChestCount chestCount;
 
     public static int getTotalChestCount() {
@@ -43,24 +45,13 @@ public class WynncraftAPI {
             File file = new File(MODID + "/" + uuid + "/chestCount.json");
             if (file.exists()) {
                 chestCount = new Gson().fromJson(FileHelper.readFile(file), ChestCount.class);
-                if (chestCount.lastChestOpened > System.currentTimeMillis() - API_SLOWNESS) {
-                    // The player just recently opened chests, then closed Minecraft and started it again.
-                    // Wynncraft's public API is not fast enough to actually having updated the chest count.
-                    getLogger().info("Loaded player chest count from the local cache file.");
-                    return;
-                }
+                return;
             }
-            String json = WebsiteHelper.getHttps("https://api.wynncraft.com/v2/player/" + uuid + "/stats");
-            if (json == null)
-                throw new APIOfflineException("Wynncraft Version 2");
-            long lastChestOpened = chestCount == null ? -1 : chestCount.lastChestOpened;
-            JsonElement playerData = new JsonParser().parse(json).getAsJsonObject().getAsJsonArray("data").get(0);
-            JsonObject globalStatistics = playerData.getAsJsonObject().get("global").getAsJsonObject();
-            int totalChests = globalStatistics.get("chestsFound").getAsInt();
             chestCount = new ChestCount();
-            chestCount.totalChests = totalChests;
-            chestCount.lastChestOpened = lastChestOpened;
-            getLogger().info("Loaded player chest count from the API.");
+            chestCount.totalChests = 0;
+            chestCount.lastChestOpened = -1;
+            saveChestCount();
+            getLogger().info("Created new chestCount file.");
         } catch (Throwable t) {
             t.printStackTrace();
         }
