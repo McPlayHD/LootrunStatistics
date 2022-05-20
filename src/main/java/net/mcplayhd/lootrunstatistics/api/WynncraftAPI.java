@@ -1,6 +1,5 @@
 package net.mcplayhd.lootrunstatistics.api;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
@@ -13,59 +12,22 @@ import net.mcplayhd.lootrunstatistics.utils.Item;
 import net.mcplayhd.lootrunstatistics.utils.Mythic;
 
 import java.io.File;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
-import static net.mcplayhd.lootrunstatistics.LootrunStatistics.*;
+import static net.mcplayhd.lootrunstatistics.LootrunStatistics.MODID;
+import static net.mcplayhd.lootrunstatistics.LootrunStatistics.getLogger;
 
 public class WynncraftAPI {
 
     // items
     private static final Map<ItemType, Map<Tier, Set<Item>>> itemDatabase = new HashMap<>();
     private static final Set<Mythic> mythics = new HashSet<>();
-    // chest count
-    private static ChestCount chestCount;
-
-    public static int getTotalChestCount() {
-        return chestCount.totalChests;
-    }
-
-    public static void increaseTotalChestCountAndSave() {
-        chestCount.totalChests++;
-        saveChestCount();
-    }
 
     public static Set<Mythic> getMythics() {
         return mythics;
-    }
-
-    public static void loadChestCount() {
-        try {
-            getLogger().info("Attempting to load player chest count.");
-            UUID uuid = getPlayerUUID();
-            File file = new File(MODID + "/" + uuid + "/chestCount.json");
-            if (file.exists()) {
-                chestCount = new Gson().fromJson(FileHelper.readFile(file), ChestCount.class);
-                return;
-            }
-            chestCount = new ChestCount();
-            chestCount.totalChests = 0;
-            chestCount.lastChestOpened = -1;
-            saveChestCount();
-            getLogger().info("Created new chestCount file.");
-        } catch (Throwable t) {
-            t.printStackTrace();
-        }
-    }
-
-    private static void saveChestCount() {
-        try {
-            UUID uuid = getPlayerUUID();
-            File file = new File(MODID + "/" + uuid + "/chestCount.json");
-            String json = new Gson().toJson(chestCount);
-            FileHelper.writeFile(file, json);
-        } catch (Throwable t) {
-            t.printStackTrace();
-        }
     }
 
     public static void loadItems() {
@@ -135,11 +97,6 @@ public class WynncraftAPI {
         } catch (Throwable t) {
             return false;
         }
-    }
-
-    static class ChestCount {
-        int totalChests;
-        long lastChestOpened;
     }
 
 }
