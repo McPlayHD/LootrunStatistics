@@ -28,6 +28,7 @@ public class ChestCountData {
 
     public void addChest() {
         totalChests++;
+        save();
     }
 
     public int getTotalChests() {

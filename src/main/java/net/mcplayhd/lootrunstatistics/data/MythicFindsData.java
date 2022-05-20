@@ -3,6 +3,7 @@ package net.mcplayhd.lootrunstatistics.data;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.mcplayhd.lootrunstatistics.helpers.FileHelper;
+import net.mcplayhd.lootrunstatistics.utils.Loc;
 import net.mcplayhd.lootrunstatistics.utils.MythicFind;
 
 import java.io.File;
@@ -30,12 +31,12 @@ public class MythicFindsData {
         }
     }
 
-    public void addMythic(String mythic, int x, int y, int z) {
+    public void addMythic(String mythic, Loc loc) {
         MythicFind find = new MythicFind(
                 mythic,
                 getChestCountData().getTotalChests(),
                 getDryData().getChestsDry(),
-                x, y, z,
+                loc.getX(), loc.getY(), loc.getZ(),
                 new Date(),
                 getDryData().getItemsDry(),
                 getDryData().getEmeraldsDry()

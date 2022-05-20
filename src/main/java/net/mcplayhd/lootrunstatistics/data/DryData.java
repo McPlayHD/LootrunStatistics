@@ -32,7 +32,7 @@ public class DryData {
         }
     }
 
-    public void increaseItemsDry(Tier tier) {
+    public void addItemDry(Tier tier) {
         itemsDry.merge(tier, 1, Integer::sum);
     }
 
