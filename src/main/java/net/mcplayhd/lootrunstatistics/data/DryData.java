@@ -42,6 +42,7 @@ public class DryData {
 
     public void addChestDry() {
         chestsDry++;
+        save();
     }
 
     public Map<Tier, Integer> getItemsDry() {
