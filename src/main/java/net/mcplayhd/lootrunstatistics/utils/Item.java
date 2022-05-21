@@ -20,9 +20,6 @@ public class Item {
     }
 
     public String getName() {
-        // Renaming "Crusade Sabatons" to "Crabs" for convenience reasons
-        if (name.equals("Crusade Sabatons"))
-            return "Crabs";
         return name;
     }
 

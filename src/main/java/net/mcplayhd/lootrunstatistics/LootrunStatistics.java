@@ -1,6 +1,7 @@
 package net.mcplayhd.lootrunstatistics;
 
 import net.mcplayhd.lootrunstatistics.api.WynncraftAPI;
+import net.mcplayhd.lootrunstatistics.chests.Chests;
 import net.mcplayhd.lootrunstatistics.commands.DryCommand;
 import net.mcplayhd.lootrunstatistics.commands.LastMythicCommand;
 import net.mcplayhd.lootrunstatistics.data.ChestCountData;
@@ -31,6 +32,7 @@ public class LootrunStatistics {
     private static final ChestCountData chestCountData = ChestCountData.load();
     private static final DryData dryData = DryData.load();
     private static final MythicFindsData mythicFindsData = MythicFindsData.load();
+    private static final Chests chests = Chests.load();
 
     public static ChestCountData getChestCountData() {
         return chestCountData;
@@ -42,6 +44,10 @@ public class LootrunStatistics {
 
     public static MythicFindsData getMythicFindsData() {
         return mythicFindsData;
+    }
+
+    public static Chests getChests() {
+        return chests;
     }
 
     public static UUID getPlayerUUID() {

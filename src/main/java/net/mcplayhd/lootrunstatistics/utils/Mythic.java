@@ -1,9 +1,9 @@
 package net.mcplayhd.lootrunstatistics.utils;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import net.mcplayhd.lootrunstatistics.api.WynncraftAPI;
-import net.mcplayhd.lootrunstatistics.chests.ChestInfoManager;
 import net.mcplayhd.lootrunstatistics.enums.ItemType;
 import net.mcplayhd.lootrunstatistics.enums.Tier;
 import net.mcplayhd.lootrunstatistics.helpers.FileHelper;
@@ -12,10 +12,14 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-import static net.mcplayhd.lootrunstatistics.LootrunStatistics.MODID;
-import static net.mcplayhd.lootrunstatistics.LootrunStatistics.getPlayerUUID;
+import static net.mcplayhd.lootrunstatistics.LootrunStatistics.*;
 
 public class Mythic extends Item {
+
+    private static final File file = new File(MODID + "/" + getPlayerUUID() + "/settings/mythicSettings.json");
+    private static final Gson gson = new GsonBuilder()
+            .setPrettyPrinting()
+            .create();
 
     private boolean enabled = true;
 
@@ -25,10 +29,9 @@ public class Mythic extends Item {
 
     public static void loadMythicSettings() {
         try {
-            File file = new File(MODID + "/" + getPlayerUUID() + "/settings/mythic_settings.json");
             if (!file.exists()) return;
             String json = FileHelper.readFile(file);
-            Map<String, Boolean> settings = new Gson().fromJson(json, new TypeToken<Map<String, Boolean>>() {
+            Map<String, Boolean> settings = gson.fromJson(json, new TypeToken<Map<String, Boolean>>() {
             }.getType());
             for (Mythic m : WynncraftAPI.getMythics()) {
                 m.setEnabled(settings.getOrDefault(m.getType() + "-" + m.getName(), true));
@@ -44,8 +47,7 @@ public class Mythic extends Item {
             for (Mythic m : WynncraftAPI.getMythics()) {
                 settings.put(m.getType() + "-" + m.getName(), m.isEnabled());
             }
-            File file = new File(MODID + "/" + getPlayerUUID() + "/settings/mythic_settings.json");
-            String json = new Gson().toJson(settings);
+            String json = gson.toJson(settings);
             FileHelper.writeFile(file, json);
         } catch (Throwable t) {
             t.printStackTrace();
@@ -58,7 +60,7 @@ public class Mythic extends Item {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
-        ChestInfoManager.updateAllChestInfos();
+        getChests().updateAllChestInfos();
     }
 
 }

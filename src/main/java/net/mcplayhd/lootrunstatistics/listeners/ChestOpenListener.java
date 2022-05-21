@@ -1,5 +1,6 @@
 package net.mcplayhd.lootrunstatistics.listeners;
 
+import net.mcplayhd.lootrunstatistics.chests.utils.MinMax;
 import net.mcplayhd.lootrunstatistics.enums.ItemType;
 import net.mcplayhd.lootrunstatistics.enums.Tier;
 import net.mcplayhd.lootrunstatistics.utils.Loc;
@@ -82,11 +83,11 @@ public class ChestOpenListener {
             chestConsidered = true;
             getChestCountData().addChest();
             getDryData().addChestDry();
+            boolean chestsDatabaseUpdated = false;
             for (int slot = 0; slot < lowerInventory.getSizeInventory(); slot++) {
                 try { // I intentionally cause exceptions because it's more convenient to develop
                     ItemStack itemStack = lowerInventory.getStackInSlot(slot);
                     if (itemStack.getDisplayName().equals("Air")) continue;
-                    getLogger().info("Found " + itemStack.getDisplayName() + "(" + itemStack.getCount() + ") in slot " + slot);
                     List<String> lore = itemStack.getTooltip(player, ITooltipFlag.TooltipFlags.ADVANCED);
                     Optional<String> itemType = lore.stream()
                             .filter(line -> Objects.requireNonNull(TextFormatting.getTextWithoutFormattingCodes(line)).contains("Type: ")).findFirst();
@@ -98,6 +99,13 @@ public class ChestOpenListener {
                             .filter(line -> Objects.requireNonNull(TextFormatting.getTextWithoutFormattingCodes(line)).contains("Combat Lv. Min: ")).findFirst();
                     if (itemType.isPresent() && itemLevel.isPresent() && itemTier.isPresent()) {
                         // I need this for now because it will throw exceptions if the type is nothing I want to track
+                        String[] levelSp = Objects.requireNonNull(TextFormatting.getTextWithoutFormattingCodes(itemLevel.get()))
+                                .replace("Lv. Range: ", "\n")
+                                .split("\n");
+                        String[] fromTo = levelSp[1].split("-");
+                        int minLvl = Integer.parseInt(fromTo[0]);
+                        int maxLvl = Integer.parseInt(fromTo[1]);
+                        MinMax minMax = new MinMax(minLvl, maxLvl);
                         ItemType type = ItemType.valueOf(Objects.requireNonNull(TextFormatting.getTextWithoutFormattingCodes(itemType.get()))
                                 .replace("Type: ", "\n")
                                 .split("\n")[1]
@@ -111,23 +119,57 @@ public class ChestOpenListener {
                             String mythicString = itemStack.getDisplayName() + " " + itemLevel.get();
                             getMythicFindsData().addMythic(mythicString, loc);
                         }
+                        getChests().addBox(loc, type, tier, minMax);
+                        chestsDatabaseUpdated = true;
                     } else if (combatLvMin.isPresent()) {
+                        int lvl = Integer.parseInt(
+                                Objects.requireNonNull(TextFormatting.getTextWithoutFormattingCodes(combatLvMin.get()))
+                                        .replace("Combat Lv. Min: ", "\n")
+                                        .split("\n")[1]
+                        );
                         String displayName = Objects.requireNonNull(TextFormatting.getTextWithoutFormattingCodes(itemStack.getDisplayName()));
                         displayName = displayName.replace("Chain Mail", "Chestplate");
                         String[] displayNameSp = displayName.split(" ");
                         // I need this for now because it will throw exceptions if the type is nothing I want to track
                         ItemType type = ItemType.valueOf(displayNameSp[displayNameSp.length - 1].toUpperCase());
                         getDryData().addItemDry(Tier.NORMAL);
+                        getChests().addNormalItem(loc, type, lvl);
                     } else {
                         String displayName = Objects.requireNonNull(TextFormatting.getTextWithoutFormattingCodes(itemStack.getDisplayName()));
                         if (displayName.equals("Emerald")) {
                             getDryData().addEmeralds(itemStack.getCount());
+                        } else {
+                            getLogger().info("Saved nothing for '" + itemStack.getDisplayName() + "'(" + itemStack.getCount() + ") in slot " + slot);
                         }
                     }
                 } catch (Exception ignored) {
                 }
             }
             getDryData().save();
+            containerName = Objects.requireNonNull(TextFormatting.getTextWithoutFormattingCodes(containerName));
+            containerName = containerName.substring("Loot Chest ".length());
+            String[] sp = containerName.split(" ");
+            String rome = sp[0];
+            int tier = 0;
+            switch (rome) {
+                case "I":
+                    tier = 1;
+                    break;
+                case "II":
+                    tier = 2;
+                    break;
+                case "III":
+                    tier = 3;
+                    break;
+                case "IV":
+                    tier = 4;
+                    break;
+            }
+            chestsDatabaseUpdated = chestsDatabaseUpdated || getChests().setTier(loc, tier);
+            if (chestsDatabaseUpdated) {
+                getChests().save();
+                getChests().updateChestInfo(loc);
+            }
         } catch (Throwable throwable) {
             throwable.printStackTrace();
         }
