@@ -23,6 +23,7 @@ import static net.mcplayhd.lootrunstatistics.LootrunStatistics.getLogger;
 public class WynncraftAPI {
 
     // items
+    private static final File itemDBfile = new File(MODID + "/itemDB.json");
     private static final Map<ItemType, Map<Tier, Set<Item>>> itemDatabase = new HashMap<>();
     private static final Set<Mythic> mythics = new HashSet<>();
 
@@ -33,17 +34,16 @@ public class WynncraftAPI {
     public static void loadItems() {
         try {
             getLogger().info("Attempting to load items.");
-            File file = new File(MODID + "/itemDB.json");
             String json;
-            if (!file.exists()) {
+            if (!itemDBfile.exists()) {
                 getLogger().info("Loading items from Wynncraft API.");
                 json = WebsiteHelper.getHttps("https://api.wynncraft.com/public_api.php?action=itemDB&category=all");
                 if (json == null)
                     throw new APIOfflineException("Wynncraft Legacy");
-                FileHelper.writeFile(file, json);
+                FileHelper.writeFile(itemDBfile, json);
             } else {
                 getLogger().info("Loading items from cached file.");
-                json = FileHelper.readFile(file);
+                json = FileHelper.readFile(itemDBfile);
             }
             JsonArray itemsArray = new JsonParser().parse(json).getAsJsonObject().getAsJsonArray("items");
             for (JsonElement element : itemsArray) {
@@ -86,12 +86,11 @@ public class WynncraftAPI {
      */
     public static boolean clearItemCache() {
         try {
-            File file = new File(MODID + "/itemDB.json");
-            boolean success = file.exists() && file.delete();
+            boolean success = itemDBfile.exists() && itemDBfile.delete();
             if (success) {
                 getLogger().info("Successfully deleted item cache.");
             } else {
-                getLogger().warn("Couldn't delete itemDB.json... Probably it didn't exist yet.");
+                getLogger().warn("Couldn't delete '" + itemDBfile.getAbsolutePath() + "'... Probably it didn't exist yet.");
             }
             return success;
         } catch (Throwable t) {
