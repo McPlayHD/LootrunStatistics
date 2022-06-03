@@ -8,6 +8,7 @@ import net.mcplayhd.lootrunstatistics.data.ChestCountData;
 import net.mcplayhd.lootrunstatistics.data.DryData;
 import net.mcplayhd.lootrunstatistics.data.MythicFindsData;
 import net.mcplayhd.lootrunstatistics.listeners.ChestOpenListener;
+import net.mcplayhd.lootrunstatistics.listeners.RenderListener;
 import net.mcplayhd.lootrunstatistics.utils.Mythic;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.client.ClientCommandHandler;
@@ -19,6 +20,7 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.apache.logging.log4j.Logger;
 
+import java.io.File;
 import java.util.UUID;
 
 @Mod(modid = LootrunStatistics.MODID, name = LootrunStatistics.NAME, version = LootrunStatistics.VERSION)
@@ -87,11 +89,13 @@ public class LootrunStatistics {
     public void onInit(FMLInitializationEvent event) {
         WynncraftAPI.loadItems();
         Mythic.loadMythicSettings();
+        chests.updateAllNotes();
     }
 
     @EventHandler
     public void onPostInit(FMLPostInitializationEvent event) {
         MinecraftForge.EVENT_BUS.register(new ChestOpenListener());
+        MinecraftForge.EVENT_BUS.register(new RenderListener());
         ClientCommandHandler.instance.registerCommand(new LastMythicCommand());
         ClientCommandHandler.instance.registerCommand(new DryCommand());
     }

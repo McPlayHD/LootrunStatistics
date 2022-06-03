@@ -2,6 +2,7 @@ package net.mcplayhd.lootrunstatistics.chests;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import net.mcplayhd.lootrunstatistics.LootrunStatistics;
 import net.mcplayhd.lootrunstatistics.chests.utils.ChestInfo;
 import net.mcplayhd.lootrunstatistics.chests.utils.MinMax;
 import net.mcplayhd.lootrunstatistics.enums.ItemType;
@@ -56,11 +57,24 @@ public class Chests {
     }
 
     public void updateChestInfo(Loc loc) {
-        // TODO: 21/05/2022 only update this chest info
+        if (!LootrunStatistics.isWynntilsInstalled()) return;
+        ChestInfo chestInfo = getChestInfo(loc);
+        chestInfo.updateChestLevel();
+        chestInfo.updateNote();
     }
 
-    public void updateAllChestInfos() {
-        // TODO: 27/03/2022 update chest infos if they are actually displayed
+    public void updateAllNotes() {
+        if (!LootrunStatistics.isWynntilsInstalled()) return;
+        for (ChestInfo chestInfo : chestInfos.values()) {
+            chestInfo.updateNote();
+        }
+    }
+
+    public void drawNotes() {
+        if (!LootrunStatistics.isWynntilsInstalled()) return;
+        for (ChestInfo chestInfo : chestInfos.values()) {
+            chestInfo.drawNote();
+        }
     }
 
 }

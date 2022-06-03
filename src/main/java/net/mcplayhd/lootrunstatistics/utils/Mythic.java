@@ -60,7 +60,7 @@ public class Mythic extends Item {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
-        getChests().updateAllChestInfos();
+        getChests().updateAllNotes();
     }
 
 }
