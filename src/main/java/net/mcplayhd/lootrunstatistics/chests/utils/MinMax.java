@@ -2,8 +2,13 @@ package net.mcplayhd.lootrunstatistics.chests.utils;
 
 public class MinMax {
 
-    private final int min;
-    private final int max;
+    private int min;
+    private int max;
+
+    public MinMax() {
+        min = Integer.MAX_VALUE;
+        max = Integer.MIN_VALUE;
+    }
 
     public MinMax(int min, int max) {
         this.min = min;
@@ -16,6 +21,19 @@ public class MinMax {
 
     public int getMax() {
         return max;
+    }
+
+    public int getDifference() {
+        return max - min;
+    }
+
+    public boolean isEmpty() {
+        return min == Integer.MAX_VALUE && max == Integer.MIN_VALUE;
+    }
+
+    public void consider(int i) {
+        min = Math.min(min, i);
+        max = Math.max(max, i);
     }
 
 }
