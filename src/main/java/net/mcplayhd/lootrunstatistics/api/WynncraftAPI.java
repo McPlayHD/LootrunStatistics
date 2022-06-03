@@ -2,6 +2,7 @@ package net.mcplayhd.lootrunstatistics.api;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.mcplayhd.lootrunstatistics.api.exceptions.APIOfflineException;
 import net.mcplayhd.lootrunstatistics.enums.ItemType;
@@ -47,19 +48,31 @@ public class WynncraftAPI {
             }
             JsonArray itemsArray = new JsonParser().parse(json).getAsJsonObject().getAsJsonArray("items");
             for (JsonElement element : itemsArray) {
-                String dropType = element.getAsJsonObject().get("dropType").getAsString();
+                JsonObject itemObject = element.getAsJsonObject();
+                String dropType = itemObject.get("dropType").getAsString();
                 if (!(dropType.equals("NORMAL") || dropType.equals("lootchest")))
                     continue;
-                String name = element.getAsJsonObject().get("name").getAsString();
+                if (!(itemObject.has("type") || itemObject.has("accessoryType")))
+                    continue;
+                String name;
+                if (itemObject.has("displayName")) {
+                    name = itemObject.get("displayName").getAsString();
+                } else {
+                    name = itemObject.get("name").getAsString();
+                }
                 Tier tier;
                 ItemType type;
                 try {
-                    tier = Tier.valueOf(element.getAsJsonObject().get("tier").getAsString().toUpperCase());
-                    type = ItemType.valueOf(element.getAsJsonObject().get("type").getAsString().toUpperCase());
+                    tier = Tier.valueOf(itemObject.get("tier").getAsString().toUpperCase());
+                    if (itemObject.has("type")) {
+                        type = ItemType.valueOf(itemObject.get("type").getAsString().toUpperCase());
+                    } else {
+                        type = ItemType.valueOf(itemObject.get("accessoryType").getAsString().toUpperCase());
+                    }
                 } catch (Exception ignored) {
                     continue;
                 }
-                int level = element.getAsJsonObject().get("level").getAsInt();
+                int level = itemObject.get("level").getAsInt();
                 Item item;
                 if (tier == Tier.MYTHIC) {
                     Mythic m = new Mythic(name, type, tier, level);
