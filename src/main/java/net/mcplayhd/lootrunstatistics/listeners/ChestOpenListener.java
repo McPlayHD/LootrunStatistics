@@ -102,7 +102,8 @@ public class ChestOpenListener {
             boolean itemFound = false;
             for (int slot = 0; slot < lowerInventory.getSizeInventory(); slot++) {
                 ItemStack itemStack = lowerInventory.getStackInSlot(slot);
-                if (itemStack.getDisplayName().equals("Air")) continue;
+                if (itemStack.getDisplayName().equals("Air"))
+                    continue;
                 itemFound = true;
                 break;
             }
@@ -118,7 +119,8 @@ public class ChestOpenListener {
             for (int slot = 0; slot < lowerInventory.getSizeInventory(); slot++) {
                 try { // I intentionally cause exceptions because it's more convenient to develop
                     ItemStack itemStack = lowerInventory.getStackInSlot(slot);
-                    if (itemStack.getDisplayName().equals("Air")) continue;
+                    if (itemStack.getDisplayName().equals("Air"))
+                        continue;
                     List<String> lore = itemStack.getTooltip(player, ITooltipFlag.TooltipFlags.ADVANCED);
                     Optional<String> itemType = lore.stream()
                             .filter(line -> Objects.requireNonNull(TextFormatting.getTextWithoutFormattingCodes(line)).contains("Type: ")).findFirst();

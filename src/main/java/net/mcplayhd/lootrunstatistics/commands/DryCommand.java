@@ -47,7 +47,8 @@ public class DryCommand extends CommandBase implements IClientCommand {
         sender.sendMessage(new TextComponentString("§eItems dry§7: §e" + getFormatted(sum)));
         for (Map.Entry<Tier, Integer> tierDry : tiers.entrySet()) {
             Tier tier = tierDry.getKey();
-            if (tier == Tier.MYTHIC) continue; // will never be seen there
+            if (tier == Tier.MYTHIC)
+                continue; // will never be seen there
             int dry = tierDry.getValue();
             sender.sendMessage(new TextComponentString("§7  " + tier.getDisplayName() + "§7: §e" + getFormatted(dry)));
         }
