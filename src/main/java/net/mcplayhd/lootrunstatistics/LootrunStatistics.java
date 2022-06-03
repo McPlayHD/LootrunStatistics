@@ -66,23 +66,29 @@ public class LootrunStatistics {
         if (wynntilsInstalled != null)
             return wynntilsInstalled;
         getLogger().info("Initiating Wynntils check.");
-        File[] files = new File("mods").listFiles();
-        if (files == null) {
-            getLogger().error("Mods folder not found.");
-            wynntilsInstalled = false;
-            return false;
+        String version = Minecraft.getMinecraft().getVersion();
+        version = version.split("-")[0];
+        wynntilsInstalled = isWynntilsInDirectory(new File("mods"))
+                || isWynntilsInDirectory(new File("mods/" + version));
+        if (!wynntilsInstalled) {
+            getLogger().warn("Wynntils not found. You won't see chest level ranges.");
         }
-        getLogger().info("Mods folder found... Checking all mods");
+        return wynntilsInstalled;
+    }
+
+    public static boolean isWynntilsInDirectory(File dir) {
+        getLogger().info("Looking for mods in " + dir.getAbsolutePath());
+        if (!dir.exists()) return false;
+        File[] files = dir.listFiles();
+        if (files == null)
+            return false;
         for (File file : files) {
             getLogger().info("Found `" + file.getName() + "`...");
             if (file.isFile() && file.getName().toLowerCase().contains("wynntils") && file.getName().endsWith(".jar")) {
                 getLogger().info("This is Wynntils!");
-                wynntilsInstalled = true;
                 return true;
             }
         }
-        getLogger().warn("Wynntils not found.");
-        wynntilsInstalled = false;
         return false;
     }
 
