@@ -32,6 +32,10 @@ public class WynncraftAPI {
         return mythics;
     }
 
+    public static Set<Item> getItems(ItemType type, Tier tier) {
+        return itemDatabase.getOrDefault(type, new HashMap<>()).getOrDefault(tier, new HashSet<>());
+    }
+
     public static void loadItems() {
         try {
             getLogger().info("Attempting to load items.");
