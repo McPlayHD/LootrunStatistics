@@ -15,7 +15,7 @@ public class ChestInfo {
     protected Map<Integer, Integer> levelsSeen = new HashMap<>();
 
     private transient MinMax minMax;
-    private transient NoteDrawer note;
+    private transient NoteDrawer noteDrawer;
 
     public ChestInfo(Loc loc) {
         this.loc = loc;
@@ -35,6 +35,13 @@ public class ChestInfo {
 
     public MinMax getMinMax() {
         return minMax;
+    }
+
+    private NoteDrawer getNoteDrawer() {
+        if (noteDrawer == null) {
+            noteDrawer = new NoteDrawer(this);
+        }
+        return noteDrawer;
     }
 
     public boolean setTier(int tier) {
@@ -66,17 +73,11 @@ public class ChestInfo {
     }
 
     public void updateNote() {
-        if (note == null) {
-            note = new NoteDrawer(this);
-        }
-        note.updateNote();
+        getNoteDrawer().updateNote();
     }
 
     public void drawNote() {
-        if (note == null) {
-            note = new NoteDrawer(this);
-        }
-        note.drawNote();
+        getNoteDrawer().drawNote();
     }
 
 }
