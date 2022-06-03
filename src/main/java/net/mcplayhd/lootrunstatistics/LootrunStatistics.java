@@ -29,6 +29,8 @@ public class LootrunStatistics {
 
     private static Logger logger;
 
+    private static Boolean wynntilsInstalled;
+
     private static final ChestCountData chestCountData = ChestCountData.load();
     private static final DryData dryData = DryData.load();
     private static final MythicFindsData mythicFindsData = MythicFindsData.load();
@@ -56,6 +58,24 @@ public class LootrunStatistics {
 
     public static Logger getLogger() {
         return logger;
+    }
+
+    public static boolean isWynntilsInstalled() {
+        if (wynntilsInstalled != null)
+            return wynntilsInstalled;
+        File[] files = new File("mods").listFiles();
+        if (files == null) {
+            wynntilsInstalled = false;
+            return false;
+        }
+        for (File file : files) {
+            if (file.isFile() && file.getName().toLowerCase().contains("wynntils") && file.getName().endsWith(".jar")) {
+                wynntilsInstalled = true;
+                return true;
+            }
+        }
+        wynntilsInstalled = false;
+        return false;
     }
 
     @EventHandler
