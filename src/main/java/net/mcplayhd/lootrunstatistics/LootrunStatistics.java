@@ -65,17 +65,23 @@ public class LootrunStatistics {
     public static boolean isWynntilsInstalled() {
         if (wynntilsInstalled != null)
             return wynntilsInstalled;
+        getLogger().info("Initiating Wynntils check.");
         File[] files = new File("mods").listFiles();
         if (files == null) {
+            getLogger().error("Mods folder not found.");
             wynntilsInstalled = false;
             return false;
         }
+        getLogger().info("Mods folder found... Checking all mods");
         for (File file : files) {
+            getLogger().info("Found `" + file.getName() + "`...");
             if (file.isFile() && file.getName().toLowerCase().contains("wynntils") && file.getName().endsWith(".jar")) {
+                getLogger().info("This is Wynntils!");
                 wynntilsInstalled = true;
                 return true;
             }
         }
+        getLogger().warn("Wynntils not found.");
         wynntilsInstalled = false;
         return false;
     }
