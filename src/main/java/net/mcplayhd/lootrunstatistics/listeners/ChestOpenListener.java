@@ -131,7 +131,6 @@ public class ChestOpenListener {
                     Optional<String> combatLvMin = lore.stream()
                             .filter(line -> Objects.requireNonNull(TextFormatting.getTextWithoutFormattingCodes(line)).contains("Combat Lv. Min: ")).findFirst();
                     if (itemType.isPresent() && itemLevel.isPresent() && itemTier.isPresent()) {
-                        // I need this for now because it will throw exceptions if the type is nothing I want to track
                         String[] levelSp = Objects.requireNonNull(TextFormatting.getTextWithoutFormattingCodes(itemLevel.get()))
                                 .replace("Lv. Range: ", "\n")
                                 .split("\n");
@@ -164,11 +163,11 @@ public class ChestOpenListener {
                         String displayName = Objects.requireNonNull(TextFormatting.getTextWithoutFormattingCodes(itemStack.getDisplayName()));
                         displayName = displayName.replace("Chain Mail", "Chestplate");
                         String[] displayNameSp = displayName.split(" ");
-                        // I need this for now because it will throw exceptions if the type is nothing I want to track
                         ItemType type = ItemType.valueOf(displayNameSp[displayNameSp.length - 1].toUpperCase());
                         getDryData().addItemDry(Tier.NORMAL);
                         dryDataUpdated = true;
                         getChests().addNormalItem(loc, type, lvl);
+                        chestsDatabaseUpdated = true;
                     } else {
                         String displayName = Objects.requireNonNull(TextFormatting.getTextWithoutFormattingCodes(itemStack.getDisplayName()));
                         if (displayName.equals("Emerald")) {
