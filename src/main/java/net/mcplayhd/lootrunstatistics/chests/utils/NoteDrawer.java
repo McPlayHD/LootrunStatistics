@@ -8,7 +8,7 @@ import net.mcplayhd.lootrunstatistics.utils.Loc;
 public class NoteDrawer {
 
     private final ChestInfo chestInfo;
-    private com.wynntils.modules.map.instances.LootRunNote note;
+    private LootRunNote note;
 
     public NoteDrawer(ChestInfo chestInfo) {
         this.chestInfo = chestInfo;
