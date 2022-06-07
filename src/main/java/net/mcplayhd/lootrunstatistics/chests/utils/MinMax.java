@@ -31,9 +31,12 @@ public class MinMax {
         return min == Integer.MAX_VALUE && max == Integer.MIN_VALUE;
     }
 
-    public void consider(int i) {
-        min = Math.min(min, i);
-        max = Math.max(max, i);
+    public void updateMin(int potentialMin) {
+        min = Math.min(min, potentialMin);
+    }
+
+    public void updateMax(int potentialMax) {
+        max = Math.max(max, potentialMax);
     }
 
 }
