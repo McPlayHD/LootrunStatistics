@@ -34,6 +34,9 @@ public class ChestInfo {
     }
 
     public MinMax getMinMax() {
+        if (minMax == null) {
+            updateChestLevel();
+        }
         return minMax;
     }
 
@@ -62,14 +65,12 @@ public class ChestInfo {
         map.triggerBoxFind(tier, minMax);
     }
 
-    public MinMax updateChestLevel() {
-        // TODO: 03/06/2022 make this better by also considering boxes
+    public void updateChestLevel() {
         MinMax minMax = new MinMax();
         for (int level : levelsSeen.keySet()) {
             minMax.consider(level);
         }
         this.minMax = minMax;
-        return minMax;
     }
 
     public void updateNote() {

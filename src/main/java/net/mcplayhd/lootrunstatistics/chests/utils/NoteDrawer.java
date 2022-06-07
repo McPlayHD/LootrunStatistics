@@ -15,12 +15,9 @@ public class NoteDrawer {
     }
 
     public void updateNote() {
-        MinMax minMax = chestInfo.getMinMax();
         // TODO: 03/06/2022 configurable
         // TODO: 03/06/2022 also display possible mythics
-        if (minMax == null) {
-            minMax = chestInfo.updateChestLevel();
-        }
+        MinMax minMax = chestInfo.getMinMax();
         StringBuilder note = new StringBuilder();
         if (minMax.isEmpty()) {
             note.append("§b").append("Lv. ? - ?");
