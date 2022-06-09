@@ -25,4 +25,8 @@ public enum ItemType {
         return name;
     }
 
+    public boolean isAccessory() {
+        return this == NECKLACE || this == RING || this == BRACELET;
+    }
+
 }

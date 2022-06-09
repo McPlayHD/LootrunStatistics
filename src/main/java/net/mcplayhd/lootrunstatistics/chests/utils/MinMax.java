@@ -39,4 +39,8 @@ public class MinMax {
         max = Math.max(max, potentialMax);
     }
 
+    public boolean isInRange(int number) {
+        return min <= number && max >= number;
+    }
+
 }

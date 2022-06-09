@@ -1,5 +1,7 @@
 package net.mcplayhd.lootrunstatistics.utils;
 
+import net.mcplayhd.lootrunstatistics.chests.utils.ChestInfo;
+import net.mcplayhd.lootrunstatistics.chests.utils.MinMax;
 import net.mcplayhd.lootrunstatistics.enums.ItemType;
 import net.mcplayhd.lootrunstatistics.enums.Tier;
 
@@ -33,6 +35,20 @@ public class Item {
 
     public int getLevel() {
         return level;
+    }
+
+    public boolean canBeInChest(ChestInfo chestInfo) {
+        MinMax minMax = chestInfo.getMinMax();
+        if (!minMax.isInRange(level))
+            return false;
+        if (chestInfo.getTier() < 3) {
+            // low tier chests can't have Discoverer
+            if (tier == Tier.MYTHIC && name.equals("Discoverer"))
+                return false;
+            // low tier chests can't have Accessories
+            return !type.isAccessory();
+        }
+        return true;
     }
 
     @Override
