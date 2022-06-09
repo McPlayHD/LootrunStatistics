@@ -74,12 +74,23 @@ public class ChestInfo {
             minMax.updateMin(level);
             minMax.updateMax(level);
         }
+        List<MinMax> allBoxRanges = getAllBoxRanges();
         if (minMax.isEmpty()) {
             // no normal item was found in this chest
-            // TODO: 03/06/2022 if only boxes were found but they aren't overlapping we can already get some level range.
+            for (MinMax a : allBoxRanges) {
+                for (MinMax b : allBoxRanges) {
+                    int gap = b.getMin() - a.getMax();
+                    // if the two boxes are overlapping by more than just one level the gap will be smaller than 0
+                    if (gap < 0)
+                        continue;
+                    // this range can now be considered as confirmed because the two boxes don't overlap (or only one level)
+                    minMax.updateMin(a.getMax());
+                    minMax.updateMax(b.getMin());
+                }
+            }
         } else {
             // at least one normal item was found in this chest
-            for (MinMax minMaxInBox : getAllBoxRanges()) {
+            for (MinMax minMaxInBox : allBoxRanges) {
                 // the respecting box min could be the max of the chest and the max of the box the min of the chest.
                 minMax.updateMin(minMaxInBox.getMax());
                 minMax.updateMax(minMaxInBox.getMin());
