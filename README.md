@@ -4,7 +4,7 @@ A mod for Wynncraft that records your lootrun statistics.
 
 ## Installation
 
-Download the latest version of the mod. (You can find it to the right under "Releases" or you can download it [here](https://github.com/McPlayHD/LootrunStatistics/releases/download/beta-v0.3/lootrunstatistics-0.3.jar) directly.)
+Download the latest version of the mod. (You can find it to the right under "Releases" or you can download it [here](https://github.com/McPlayHD/LootrunStatistics/releases/download/beta-v0.4/lootrunstatistics-0.4.jar) directly.)
 
 Put the compiled `.jar` file into your `%appdata%/.minecraft/mods/` folder.
 
@@ -22,5 +22,5 @@ In order for the chest level range displaying to work you have to install Wynnti
 - [x] show chest count in inventory
 - [x] record and display chest data
 - [ ] add settings
-- [ ] make chest level calculation better
+- [x] make chest level calculation better
 - [ ] display possible mythics
