@@ -14,6 +14,12 @@ In order for the chest level range displaying to work you have to install Wynnti
 
 ## TODO
 
+- [ ] add settings
+- [ ] display possible mythics
+- [ ] loot cooldown above chests
+
+## DONE
+
 - [x] count total chests
 - [x] count dry chests / emeralds / items
 - [x] save statistics about mythic finds
@@ -21,6 +27,4 @@ In order for the chest level range displaying to work you have to install Wynnti
 - [x] created `/dry` and `/lastmythic` commands
 - [x] show chest count in inventory
 - [x] record and display chest data
-- [ ] add settings
 - [x] make chest level calculation better
-- [ ] display possible mythics
