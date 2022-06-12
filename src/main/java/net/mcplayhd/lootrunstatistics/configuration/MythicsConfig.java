@@ -21,14 +21,6 @@ public class MythicsConfig {
 
     protected Map<Integer, MythicsConfigEntry> mythics = new HashMap<>(); // [hash, settings]
 
-    public static MythicsConfig load() {
-        try {
-            return gson.fromJson(FileHelper.readFile(file), MythicsConfig.class);
-        } catch (Exception ignored) {
-            return new MythicsConfig();
-        }
-    }
-
     public void load(Mythic mythic) {
         MythicsConfigEntry entry = mythics.get(mythic.hashCode());
         if (entry == null) return;
@@ -39,6 +31,14 @@ public class MythicsConfig {
     public void save(Mythic mythic) {
         mythics.put(mythic.hashCode(), new MythicsConfigEntry(mythic));
         save();
+    }
+
+    public static MythicsConfig load() {
+        try {
+            return gson.fromJson(FileHelper.readFile(file), MythicsConfig.class);
+        } catch (Exception ignored) {
+            return new MythicsConfig();
+        }
     }
 
     public void save() {
