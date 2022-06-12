@@ -6,8 +6,7 @@ import net.mcplayhd.lootrunstatistics.helpers.FileHelper;
 
 import java.io.File;
 
-import static net.mcplayhd.lootrunstatistics.LootrunStatistics.MODID;
-import static net.mcplayhd.lootrunstatistics.LootrunStatistics.getPlayerUUID;
+import static net.mcplayhd.lootrunstatistics.LootrunStatistics.*;
 
 public class Configuration {
 
@@ -34,26 +33,29 @@ public class Configuration {
         return levelRangeAboveChests;
     }
 
-    public void setLevelRangeAboveChests(boolean levelRangeAboveChests) {
-        this.levelRangeAboveChests = levelRangeAboveChests;
+    public void toggleLevelRangeAboveChests() {
+        this.levelRangeAboveChests = !this.levelRangeAboveChests;
         save();
+        getChests().updateAllNotes();
     }
 
     public MythicsAboveChests getMythicsAboveChests() {
         return mythicsAboveChests;
     }
 
-    public void setMythicsAboveChests(MythicsAboveChests mythicsAboveChests) {
-        this.mythicsAboveChests = mythicsAboveChests;
+    public void toggleMythicsAboveChests() {
+        int nextId = (this.mythicsAboveChests.ordinal() + 1) % MythicsAboveChests.values().length;
+        this.mythicsAboveChests = MythicsAboveChests.values()[nextId];
         save();
+        getChests().updateAllNotes();
     }
 
     public boolean displayDryCountInChest() {
         return dryCountInChest;
     }
 
-    public void setDryCountInChest(boolean dryCountInChest) {
-        this.dryCountInChest = dryCountInChest;
+    public void toggleDryCountInChest() {
+        this.dryCountInChest = !this.dryCountInChest;
         save();
     }
 
@@ -61,8 +63,8 @@ public class Configuration {
         return totalChestCountInChest;
     }
 
-    public void setTotalChestCountInChest(boolean totalChestCountInChest) {
-        this.totalChestCountInChest = totalChestCountInChest;
+    public void toggleTotalChestCountInChest() {
+        this.totalChestCountInChest = !this.totalChestCountInChest;
         save();
     }
 
@@ -70,8 +72,9 @@ public class Configuration {
         return groupingSeparator;
     }
 
-    public void setGroupingSeparator(GroupingSeparator groupingSeparator) {
-        this.groupingSeparator = groupingSeparator;
+    public void toggleGroupingSeparator() {
+        int nextId = (this.groupingSeparator.ordinal() + 1) % GroupingSeparator.values().length;
+        this.groupingSeparator = GroupingSeparator.values()[nextId];
         save();
     }
 
