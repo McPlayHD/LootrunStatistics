@@ -5,20 +5,16 @@ import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.Locale;
 
+import static net.mcplayhd.lootrunstatistics.LootrunStatistics.getConfiguration;
+
 public class FormatterHelper {
 
-    // TODO: 20/05/2022 make configurable
-    public static DecimalFormat NUMBER_FORMATTER;
-
-    static {
-        NUMBER_FORMATTER = (DecimalFormat) NumberFormat.getInstance(Locale.US);
-        DecimalFormatSymbols symbols = NUMBER_FORMATTER.getDecimalFormatSymbols();
-        symbols.setGroupingSeparator('\'');
-        NUMBER_FORMATTER.setDecimalFormatSymbols(symbols);
-    }
-
     public static String getFormatted(int number) {
-        return NUMBER_FORMATTER.format(number);
+        DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.US);
+        DecimalFormatSymbols symbols = formatter.getDecimalFormatSymbols();
+        symbols.setGroupingSeparator(getConfiguration().getGroupingSeparator().getSeparator());
+        formatter.setDecimalFormatSymbols(symbols);
+        return formatter.format(number);
     }
 
     public static String getFormattedDry(int dry) {

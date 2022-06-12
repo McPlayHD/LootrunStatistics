@@ -74,7 +74,11 @@ public class ChestOpenListener {
             dryThisChest = getDryData().getChestsDry();
             // "\u00a77\u00a7r" is our identifier.
             // It won't show because it just sets the color and resets it immediately.
-            lowerInventory.setCustomName(containerName + "\u00a77\u00a7r" + " #" + getFormatted(totalChests));
+            if (getConfiguration().displayTotalChestCountInChest()) {
+                lowerInventory.setCustomName(containerName + "\u00a77\u00a7r" + " #" + getFormatted(totalChests));
+            } else {
+                lowerInventory.setCustomName(containerName + "\u00a77\u00a7r");
+            }
         }
     }
 
@@ -89,12 +93,14 @@ public class ChestOpenListener {
             InventoryBasic lowerInventory = (InventoryBasic) ((ContainerChest) openContainer).getLowerChestInventory();
             String containerName = lowerInventory.getName();
             if (!containerName.contains("Loot Chest")) return;
-            GlStateManager.pushMatrix();
-            GlStateManager.translate(1f, 1f, 1f);
-            int screenWidth = event.getGui().width;
-            int screenHeight = event.getGui().height;
-            DrawStringHelper.drawStringLeft(getFormatted(dryThisChest) + " dry", screenWidth / 2 - 20, screenHeight / 2 - 11, new Color(64, 64, 64));
-            GlStateManager.popMatrix();
+            if (getConfiguration().displayDryCountInChest()) {
+                GlStateManager.pushMatrix();
+                GlStateManager.translate(1f, 1f, 1f);
+                int screenWidth = event.getGui().width;
+                int screenHeight = event.getGui().height;
+                DrawStringHelper.drawStringLeft(getFormatted(dryThisChest) + " dry", screenWidth / 2 - 20, screenHeight / 2 - 11, new Color(64, 64, 64));
+                GlStateManager.popMatrix();
+            }
             if (chestConsidered) {
                 // we only want to look at each chest once.
                 return;
