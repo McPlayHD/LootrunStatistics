@@ -13,10 +13,7 @@ import net.mcplayhd.lootrunstatistics.utils.Item;
 import net.mcplayhd.lootrunstatistics.utils.Mythic;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static net.mcplayhd.lootrunstatistics.LootrunStatistics.MODID;
 import static net.mcplayhd.lootrunstatistics.LootrunStatistics.getLogger;
@@ -24,9 +21,14 @@ import static net.mcplayhd.lootrunstatistics.LootrunStatistics.getLogger;
 public class WynncraftAPI {
 
     // items
-    private static final File itemDBfile = new File(MODID + "/itemDB.json");
+    private static final File itemDBFile = new File(MODID + "/itemDB.json");
+    private static Date itemDBDate;
     private static final Map<ItemType, Map<Tier, Set<Item>>> itemDatabase = new HashMap<>();
     private static final Set<Mythic> mythics = new HashSet<>();
+
+    public static Date getItemDBDate() {
+        return itemDBDate;
+    }
 
     public static Set<Mythic> getMythics() {
         return mythics;
@@ -40,16 +42,20 @@ public class WynncraftAPI {
         try {
             getLogger().info("Attempting to load items.");
             String json;
-            if (!itemDBfile.exists()) {
+            if (!itemDBFile.exists() || itemDBFile.lastModified() < System.currentTimeMillis() - 1000L * 60 * 60 * 24 * 7) {
+                // loading the database or reloading it if it's older than a week.
                 getLogger().info("Loading items from Wynncraft API.");
                 json = WebsiteHelper.getHttps("https://api.wynncraft.com/public_api.php?action=itemDB&category=all");
                 if (json == null)
                     throw new APIOfflineException("Wynncraft Legacy");
-                FileHelper.writeFile(itemDBfile, json);
+                FileHelper.writeFile(itemDBFile, json);
             } else {
                 getLogger().info("Loading items from cached file.");
-                json = FileHelper.readFile(itemDBfile);
+                json = FileHelper.readFile(itemDBFile);
             }
+            itemDBDate = new Date(itemDBFile.lastModified());
+            itemDatabase.clear();
+            mythics.clear();
             JsonArray itemsArray = new JsonParser().parse(json).getAsJsonObject().getAsJsonArray("items");
             for (JsonElement element : itemsArray) {
                 JsonObject itemObject = element.getAsJsonObject();
@@ -97,17 +103,16 @@ public class WynncraftAPI {
 
     /**
      * This function should be called whenever Wynncraft makes changes to items... I don't know how to trigger that yet
-     * todo implement trigger for this function to call
      *
      * @return true if the cache file existed and was successfully deleted
      */
     public static boolean clearItemCache() {
         try {
-            boolean success = itemDBfile.exists() && itemDBfile.delete();
+            boolean success = itemDBFile.exists() && itemDBFile.delete();
             if (success) {
                 getLogger().info("Successfully deleted item cache.");
             } else {
-                getLogger().warn("Couldn't delete '" + itemDBfile.getAbsolutePath() + "'... Probably it didn't exist yet.");
+                getLogger().warn("Couldn't delete '" + itemDBFile.getAbsolutePath() + "'... Probably it didn't exist yet.");
             }
             return success;
         } catch (Throwable t) {
