@@ -19,17 +19,17 @@ public class MythicsConfig {
             .setPrettyPrinting()
             .create();
 
-    protected Map<Integer, MythicsConfigEntry> mythics = new HashMap<>(); // [hash, settings]
+    protected Map<String, MythicsConfigEntry> mythics = new HashMap<>(); // [hash, settings]
 
     public void load(Mythic mythic) {
-        MythicsConfigEntry entry = mythics.get(mythic.hashCode());
+        MythicsConfigEntry entry = mythics.get(mythic.getIdentifier());
         if (entry == null) return;
         mythic.setEnabled(entry.enabled);
         mythic.setDisplayName(entry.displayName);
     }
 
     public void save(Mythic mythic) {
-        mythics.put(mythic.hashCode(), new MythicsConfigEntry(mythic));
+        mythics.put(mythic.getIdentifier(), new MythicsConfigEntry(mythic));
         save();
     }
 
