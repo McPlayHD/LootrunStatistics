@@ -1,6 +1,7 @@
 package net.mcplayhd.lootrunstatistics.utils;
 
 import net.mcplayhd.lootrunstatistics.api.WynncraftAPI;
+import net.mcplayhd.lootrunstatistics.enums.ArmorType;
 import net.mcplayhd.lootrunstatistics.enums.ItemType;
 import net.mcplayhd.lootrunstatistics.enums.Tier;
 
@@ -12,8 +13,8 @@ public class Mythic extends Item {
     private boolean enabled = true;
     private String displayName;
 
-    public Mythic(String name, ItemType type, Tier tier, int level) {
-        super(name, type, tier, level);
+    public Mythic(String name, ItemType type, Tier tier, int level, String material, ArmorType armorType) {
+        super(name, type, tier, level, material, armorType);
         displayName = name;
     }
 
@@ -31,6 +32,10 @@ public class Mythic extends Item {
         this.enabled = enabled;
         getMythicsConfig().save(this);
         getChests().updateAllNotes();
+    }
+
+    public void toggleEnabled() {
+        setEnabled(!isEnabled());
     }
 
     public String getDisplayName() {
