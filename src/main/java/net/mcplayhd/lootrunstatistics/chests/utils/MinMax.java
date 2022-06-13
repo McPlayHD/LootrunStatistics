@@ -1,7 +1,6 @@
 package net.mcplayhd.lootrunstatistics.chests.utils;
 
-public class MinMax {
-
+public class MinMax implements Cloneable {
     private int min;
     private int max;
 
@@ -43,4 +42,15 @@ public class MinMax {
         return min <= number && max >= number;
     }
 
+    @Override
+    public MinMax clone() {
+        try {
+            MinMax clone = (MinMax) super.clone();
+            clone.min = min;
+            clone.max = max;
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
+    }
 }

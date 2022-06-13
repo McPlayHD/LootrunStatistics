@@ -18,7 +18,7 @@ public class NoteDrawer {
     }
 
     public void updateNote() {
-        MinMax minMax = chestInfo.getMinMax();
+        MinMax minMax = chestInfo.getMinMax().clone();
         StringBuilder note = new StringBuilder();
         int confirmedRange = minMax.getDifference();
         boolean unlevelled = confirmedRange > 8;
