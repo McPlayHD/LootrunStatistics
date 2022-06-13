@@ -88,13 +88,17 @@ public class Configuration {
 
     public enum MythicsAboveChests {
         NONE("<None>"),
-        MYTHICS_ALL("All Possible Mythics"),
-        MYTHICS_FOUND("Mythics found in chest"),
+        MYTHICS_ALL("All possible Mythics"),
+        // TODO: 12/06/2022 MYTHICS_FOUND("Mythics found in chest"),
         ;
         final String description;
 
         MythicsAboveChests(String description) {
             this.description = description;
+        }
+
+        public String getDescription() {
+            return description;
         }
     }
 
