@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.mcplayhd.lootrunstatistics.api.exceptions.APIOfflineException;
+import net.mcplayhd.lootrunstatistics.enums.ArmorType;
 import net.mcplayhd.lootrunstatistics.enums.ItemType;
 import net.mcplayhd.lootrunstatistics.enums.Tier;
 import net.mcplayhd.lootrunstatistics.helpers.FileHelper;
@@ -19,7 +20,6 @@ import static net.mcplayhd.lootrunstatistics.LootrunStatistics.MODID;
 import static net.mcplayhd.lootrunstatistics.LootrunStatistics.getLogger;
 
 public class WynncraftAPI {
-
     // items
     private static final File itemDBFile = new File(MODID + "/itemDB.json");
     private static Date itemDBDate;
@@ -38,25 +38,45 @@ public class WynncraftAPI {
         return itemDatabase.getOrDefault(type, new HashMap<>()).getOrDefault(tier, new HashSet<>());
     }
 
+    private static String getItemDBJson() throws APIOfflineException {
+        String json = WebsiteHelper.getHttps("https://api.wynncraft.com/public_api.php?action=itemDB&category=all");
+        if (json == null)
+            throw new APIOfflineException("Wynncraft Legacy");
+        return json;
+    }
+
+    private static boolean checkItemDBVersion(float version) throws APIOfflineException {
+        String json = WebsiteHelper.getHttps("https://api.wynncraft.com/public_api.php?action=itemDB&category=null");
+        if (json == null)
+            throw new APIOfflineException("Wynncraft Legacy");
+        float onlineVersion = new JsonParser().parse(json).getAsJsonObject().getAsJsonObject("request").get("version").getAsFloat();
+        return onlineVersion == version;
+    }
+
     public static void loadItems() {
         try {
-            getLogger().info("Attempting to load items.");
-            String json;
-            if (!itemDBFile.exists() || itemDBFile.lastModified() < System.currentTimeMillis() - 1000L * 60 * 60 * 24 * 7) {
-                // loading the database or reloading it if it's older than a week.
-                getLogger().info("Loading items from Wynncraft API.");
-                json = WebsiteHelper.getHttps("https://api.wynncraft.com/public_api.php?action=itemDB&category=all");
-                if (json == null)
-                    throw new APIOfflineException("Wynncraft Legacy");
-                FileHelper.writeFile(itemDBFile, json);
-            } else {
-                getLogger().info("Loading items from cached file.");
-                json = FileHelper.readFile(itemDBFile);
-            }
-            itemDBDate = new Date(itemDBFile.lastModified());
             itemDatabase.clear();
             mythics.clear();
-            JsonArray itemsArray = new JsonParser().parse(json).getAsJsonObject().getAsJsonArray("items");
+            getLogger().info("Attempting to load items.");
+            JsonObject jsonObject = null;
+            boolean isUpToDate = false;
+            if (itemDBFile.exists()) {
+                getLogger().info("Loading items from cached file.");
+                jsonObject = new JsonParser().parse(FileHelper.readFile(itemDBFile)).getAsJsonObject();
+                float version = jsonObject.getAsJsonObject("request").get("version").getAsFloat();
+                getLogger().info("Checking version of itemDB...");
+                isUpToDate = checkItemDBVersion(version);
+                getLogger().info("Needs update: " + !isUpToDate);
+            }
+            if (!isUpToDate) {
+                // loading the database or reloading it if a new one exists.
+                getLogger().info("Loading items from Wynncraft API.");
+                String json = getItemDBJson();
+                jsonObject = new JsonParser().parse(json).getAsJsonObject();
+                FileHelper.writeFile(itemDBFile, json);
+            }
+            itemDBDate = new Date(itemDBFile.lastModified());
+            JsonArray itemsArray = jsonObject.getAsJsonArray("items");
             for (JsonElement element : itemsArray) {
                 JsonObject itemObject = element.getAsJsonObject();
                 String dropType = itemObject.get("dropType").getAsString();
