@@ -10,9 +10,12 @@ import static net.mcplayhd.lootrunstatistics.LootrunStatistics.getConfiguration;
 public class FormatterHelper {
 
     public static String getFormatted(int number) {
+        Character groupingSeparator = getConfiguration().getGroupingSeparator().getSeparator();
+        if (groupingSeparator == null)
+            return "" + number;
         DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.US);
         DecimalFormatSymbols symbols = formatter.getDecimalFormatSymbols();
-        symbols.setGroupingSeparator(getConfiguration().getGroupingSeparator().getSeparator());
+        symbols.setGroupingSeparator(groupingSeparator);
         formatter.setDecimalFormatSymbols(symbols);
         return formatter.format(number);
     }

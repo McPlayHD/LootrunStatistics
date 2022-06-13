@@ -99,20 +99,24 @@ public class Configuration {
     }
 
     public enum GroupingSeparator {
-        NONE("<None>", '\0'),
+        NONE("<None>", null),
         SPACE("<Space>", ' '),
         APOSTROPHE("'", '\''),
         COMMA(",", ','),
         ;
         final String description;
-        final char separator;
+        final Character separator;
 
-        GroupingSeparator(String description, char separator) {
+        GroupingSeparator(String description, Character separator) {
             this.description = description;
             this.separator = separator;
         }
 
-        public char getSeparator() {
+        public String getDescription() {
+            return description;
+        }
+
+        public Character getSeparator() {
             return separator;
         }
     }
