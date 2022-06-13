@@ -10,9 +10,9 @@ You can find specific versions of the mod in the ["Releases"](https://github.com
 
 Put the compiled `.jar` file into your `%appdata%/.minecraft/mods/` folder.
 
-In order for the chest level range displaying to work you have to install Wynntils (https://wynntils.com/) by also placing it into the `%appdata%/.minecraft/mods/` folder.
+In order for all features to work, you have to install [Wynntils](https://wynntils.com/) by also placing it into the `%appdata%/.minecraft/mods/` folder.
 
-**Not compatible with chestcountmod.**
+**Not compatible with the Acivia chestcountmod!**
 
 ## TODO
 
