@@ -20,15 +20,20 @@ public class NoteDrawer {
     public void updateNote() {
         MinMax minMax = chestInfo.getMinMax();
         StringBuilder note = new StringBuilder();
+        int confirmedRange = minMax.getDifference();
+        boolean unlevelled = confirmedRange > 8;
+        boolean highLevelUnconfirmedButEnoughItems
+                = confirmedRange < 8
+                && minMax.getMax() >= 100
+                && chestInfo.getLevelsSeen().values().stream().mapToInt(i -> i).sum() > 69;
         if (getConfiguration().displayLevelRangeAboveChests()) {
             if (minMax.isEmpty()) {
                 note.append("§b").append("Lv. ? - ?");
             } else {
-                int confirmedRange = minMax.getDifference();
-                if (confirmedRange > 8) {
+                if (unlevelled) {
                     // Unlevelled chest
                     note.append("§b").append("Unlevelled");
-                } else if (confirmedRange < 8 && minMax.getMax() >= 100 && chestInfo.getLevelsSeen().values().stream().mapToInt(i -> i).sum() > 69) {
+                } else if (highLevelUnconfirmedButEnoughItems) {
                     // Sadly, in Wynncraft there are no "Normal" items above level 100. We have to improvise.
                     // In 80 "Normal" items we didn't find the edge case item level once.
                     // We just assume the chest level to be from `min` to `(min+8)`
