@@ -103,13 +103,22 @@ public class WynncraftAPI {
                     continue;
                 }
                 int level = itemObject.get("level").getAsInt();
+                String material = null;
+                if (itemObject.has("material") && !itemObject.get("material").isJsonNull()) {
+                    material = itemObject.get("material").getAsString();
+                }
+                ArmorType armorType = null;
+                try {
+                    armorType = ArmorType.valueOf(itemObject.get("armorType").getAsString().toUpperCase());
+                } catch (Exception ignored) {
+                }
                 Item item;
                 if (tier == Tier.MYTHIC) {
-                    Mythic m = new Mythic(name, type, tier, level);
+                    Mythic m = new Mythic(name, type, tier, level, material, armorType);
                     mythics.add(m);
                     item = m;
                 } else {
-                    item = new Item(name, type, tier, level);
+                    item = new Item(name, type, tier, level, material, armorType);
                 }
                 itemDatabase.computeIfAbsent(type, a -> new HashMap<>())
                         .computeIfAbsent(tier, b -> new HashSet<>())
