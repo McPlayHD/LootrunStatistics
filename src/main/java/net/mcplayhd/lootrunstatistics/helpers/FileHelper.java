@@ -5,16 +5,11 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.stream.Stream;
 
 public class FileHelper {
 
     public static String readFile(File file) throws IOException {
-        StringBuilder sb = new StringBuilder();
-        try (Stream<String> stream = Files.lines(file.toPath(), StandardCharsets.UTF_8)) {
-            stream.forEach(s -> sb.append(s).append("\n"));
-        }
-        return sb.toString();
+        return new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
     }
 
     public static void writeFile(File file, String content) throws IOException {
