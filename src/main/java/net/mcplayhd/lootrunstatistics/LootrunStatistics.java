@@ -4,6 +4,7 @@ import net.mcplayhd.lootrunstatistics.api.WynncraftAPI;
 import net.mcplayhd.lootrunstatistics.chests.Chests;
 import net.mcplayhd.lootrunstatistics.commands.DryCommand;
 import net.mcplayhd.lootrunstatistics.commands.LastMythicCommand;
+import net.mcplayhd.lootrunstatistics.commands.MainCommand;
 import net.mcplayhd.lootrunstatistics.configuration.Configuration;
 import net.mcplayhd.lootrunstatistics.configuration.MythicsConfig;
 import net.mcplayhd.lootrunstatistics.data.ChestCountData;
@@ -135,6 +136,7 @@ public class LootrunStatistics {
         MinecraftForge.EVENT_BUS.register(new RenderListener());
         ClientCommandHandler.instance.registerCommand(new LastMythicCommand());
         ClientCommandHandler.instance.registerCommand(new DryCommand());
+        ClientCommandHandler.instance.registerCommand(new MainCommand());
     }
 
 }
