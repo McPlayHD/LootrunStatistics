@@ -3,10 +3,19 @@ package net.mcplayhd.lootrunstatistics.chests.utils;
 import com.wynntils.core.framework.rendering.colors.MinecraftChatColors;
 import com.wynntils.core.utils.objects.Location;
 import com.wynntils.modules.map.instances.LootRunNote;
+import net.mcplayhd.lootrunstatistics.api.WynncraftAPI;
 import net.mcplayhd.lootrunstatistics.configuration.Configuration;
+import net.mcplayhd.lootrunstatistics.enums.ItemType;
 import net.mcplayhd.lootrunstatistics.utils.Loc;
+import net.mcplayhd.lootrunstatistics.utils.Mythic;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import static net.mcplayhd.lootrunstatistics.LootrunStatistics.getConfiguration;
+import static net.mcplayhd.lootrunstatistics.LootrunStatistics.getPlayerLevel;
 
 public class NoteDrawer {
 
@@ -47,10 +56,53 @@ public class NoteDrawer {
         }
         Configuration.MythicsAboveChests mythicsAboveChests = getConfiguration().getMythicsAboveChests();
         if (mythicsAboveChests != Configuration.MythicsAboveChests.NONE) {
-            if (note.length() > 0) {
-                note.append("\\n");
+            if (mythicsAboveChests == Configuration.MythicsAboveChests.MYTHICS_ALL) {
+                if (!minMax.isEmpty()) {
+                    if (unlevelled) {
+                        // let's only display mythics in the players level range.
+                        int playerLevel = getPlayerLevel();
+                        if (playerLevel > 100) {
+                            // unlevelled chests seem to be capped at level 100.
+                            playerLevel = 100;
+                        }
+                        minMax = new MinMax(playerLevel - 4, playerLevel + 4);
+                    }
+                    if (highLevelUnconfirmedButEnoughItems) {
+                        minMax.updateMax(minMax.getMin() + 8);
+                    }
+                    Set<Mythic> possibleMythics = new HashSet<>();
+                    Set<Mythic> ignoredMythics = new HashSet<>();
+                    Map<ItemType, Set<Mythic>> possiblePerType = new HashMap<>();
+                    for (Mythic mythic : WynncraftAPI.getMythics()) {
+                        if (!mythic.canBeInChest(chestInfo, minMax)) continue;
+                        if (!mythic.isEnabled()) {
+                            ignoredMythics.add(mythic);
+                            continue;
+                        }
+                        possibleMythics.add(mythic);
+                        possiblePerType.computeIfAbsent(mythic.getType(), s -> new HashSet<>()).add(mythic);
+                    }
+                    if (!(possibleMythics.isEmpty() && ignoredMythics.isEmpty())) {
+                        if (note.length() > 0) {
+                            note.append("\\n");
+                        }
+                        note.append("&5");
+                        boolean first = true;
+                        // TODO: 12/06/2022 maybe setting to group
+                        for (Map.Entry<ItemType, Set<Mythic>> entry : possiblePerType.entrySet()) {
+                            for (Mythic mythic : entry.getValue()) {
+                                note.append(first ? "" : "&7, &5").append(mythic.getDisplayName());
+                                first = false;
+                            }
+                        }
+                        if (!ignoredMythics.isEmpty()) {
+                            note.append("\\n&7&oIgnored: &d").append(ignoredMythics.size());
+                        }
+                    }
+                }
+            } else {
+                // TODO: 12/06/2022 mythics found in this chest
             }
-            // TODO: 12/06/2022  display mythics
         }
         if (note.length() == 0) {
             this.note = null;

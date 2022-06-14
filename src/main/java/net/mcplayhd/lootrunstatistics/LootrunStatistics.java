@@ -13,6 +13,7 @@ import net.mcplayhd.lootrunstatistics.listeners.ChestOpenListener;
 import net.mcplayhd.lootrunstatistics.listeners.RenderListener;
 import net.mcplayhd.lootrunstatistics.utils.Mythic;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
@@ -75,6 +76,17 @@ public class LootrunStatistics {
         return logger;
     }
 
+    public static EntityPlayerSP getPlayer() {
+        return Minecraft.getMinecraft().player;
+    }
+
+    public static int getPlayerLevel() {
+        EntityPlayerSP player = getPlayer();
+        if (player == null)
+            return 0;
+        return player.experienceLevel;
+    }
+
     public static boolean isWynntilsInstalled() {
         if (wynntilsInstalled != null)
             return wynntilsInstalled;
@@ -114,7 +126,7 @@ public class LootrunStatistics {
     public void onInit(FMLInitializationEvent event) {
         WynncraftAPI.loadItems();
         Mythic.loadMythicSettings();
-        chests.updateAllNotes();
+        getChests().updateAllNotes();
     }
 
     @EventHandler
