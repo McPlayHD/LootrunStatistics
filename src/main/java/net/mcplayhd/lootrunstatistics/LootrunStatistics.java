@@ -27,7 +27,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.File;
 import java.util.UUID;
 
-@Mod(modid = LootrunStatistics.MODID, name = LootrunStatistics.NAME, version = LootrunStatistics.VERSION)
+@Mod(modid = LootrunStatistics.MODID, name = LootrunStatistics.NAME, version = LootrunStatistics.VERSION, guiFactory = "net.mcplayhd.lootrunstatistics.gui.GuiFactory")
 public class LootrunStatistics {
     public static final String MODID = "lootrunstatistics";
     public static final String NAME = "Lootrun Statistics";
