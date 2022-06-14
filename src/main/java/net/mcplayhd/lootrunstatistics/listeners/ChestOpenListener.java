@@ -57,6 +57,10 @@ public class ChestOpenListener {
         getLogger().info("Clicked chest at " + chestLocation.getX() + "," + chestLocation.getY() + "," + chestLocation.getZ() + ".");
     }
 
+    /*
+    Credits to https://github.com/albarv340/chestcountmod for using the InitGuiEvent to change the title of the chest
+        and counting the chest.
+     */
     @SubscribeEvent
     public void onGuiOpen(GuiScreenEvent.InitGuiEvent event) {
         if (event.getGui() == null) return;
@@ -94,6 +98,7 @@ public class ChestOpenListener {
             String containerName = lowerInventory.getName();
             if (!containerName.contains("Loot Chest")) return;
             if (getConfiguration().displayDryCountInChest()) {
+                // Credits to https://github.com/albarv340/chestcountmod
                 GlStateManager.pushMatrix();
                 GlStateManager.translate(1f, 1f, 1f);
                 int screenWidth = event.getGui().width;
