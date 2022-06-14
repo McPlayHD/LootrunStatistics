@@ -4,9 +4,11 @@ A mod for Wynncraft that records your lootrun statistics.
 
 ## Installation
 
-[Download](https://github.com/McPlayHD/LootrunStatistics/releases/download/beta-v0.4/lootrunstatistics-0.4.jar) the latest version of the mod. 
+[Download](https://github.com/McPlayHD/LootrunStatistics/releases/download/v1.0.0/lootrunstatistics-1.0.0.jar) the
+latest version of the mod.
 
-You can find specific versions of the mod in the ["Releases"](https://github.com/McPlayHD/LootrunStatistics/releases) page to the right.
+You can find specific versions of the mod in the [Releases](https://github.com/McPlayHD/LootrunStatistics/releases) page
+to the right.
 
 Put the compiled `.jar` file into your `%appdata%/.minecraft/mods/` folder.
 
@@ -16,13 +18,9 @@ In order for all features to work, you have to install [Wynntils](https://wynnti
 
 ## TODO
 
-- [ ] add settings
-- [ ] display possible mythics
-- [ ] loot cooldown above chests
-- [ ] update notification
-- [ ] auto update Wynncraft item database
-- [ ] display mythics found in a chest
 - [ ] store actual mythic found in mythic history
+- [ ] display mythics found in a chest
+- [ ] loot cooldown above chests
 
 ## DONE
 
@@ -34,6 +32,10 @@ In order for all features to work, you have to install [Wynntils](https://wynnti
 - [x] show chest count in inventory
 - [x] record and display chest data
 - [x] make chest level calculation better
+- [x] add settings
+- [x] display possible mythics
+- [x] update notification
+- [x] auto update Wynncraft item database
 
 ## Credits
 - `LootrunNotes` and displaying items from https://github.com/Wynntils/Wynntils
