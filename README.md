@@ -34,3 +34,7 @@ In order for all features to work, you have to install [Wynntils](https://wynnti
 - [x] show chest count in inventory
 - [x] record and display chest data
 - [x] make chest level calculation better
+
+## Credits
+- `LootrunNotes` and displaying items from https://github.com/Wynntils/Wynntils
+- idea and some events / functions from https://github.com/albarv340/chestcountmod
