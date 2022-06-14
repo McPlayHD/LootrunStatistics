@@ -97,6 +97,14 @@ jar {
     }
 }
 
+// found in https://github.com/Wynntils/Wynntils/blob/development/build.gradle
+processResources {
+    filesMatching("mcmod.info") {
+        expand "version": version
+    }
+}
+
+
 // Example configuration to allow publishing using the maven-publish task
 // This is the preferred method to reobfuscate your jar file
 jar.finalizedBy('reobfJar')
