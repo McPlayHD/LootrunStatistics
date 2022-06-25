@@ -21,5 +21,4 @@ public class FileHelper {
             writer.write(content);
         }
     }
-
 }

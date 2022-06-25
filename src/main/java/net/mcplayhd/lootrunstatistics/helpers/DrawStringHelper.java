@@ -21,5 +21,4 @@ public class DrawStringHelper {
         FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
         fontRenderer.drawString(text, x - fontRenderer.getStringWidth(text), y, color.getRGB());
     }
-
 }

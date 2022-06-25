@@ -11,12 +11,10 @@ import net.minecraft.item.ItemStack;
 import java.util.Objects;
 
 public class Item {
-
     private final String name;
     private final ItemType type;
     private final Tier tier;
     private final int level;
-
     private final String material; // formatted as <id>:<damage>
     private final ArmorType armorType;
 
@@ -86,5 +84,4 @@ public class Item {
     public int hashCode() {
         return Objects.hash(name, type, level);
     }
-
 }

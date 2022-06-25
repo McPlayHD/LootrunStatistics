@@ -9,7 +9,6 @@ import static net.mcplayhd.lootrunstatistics.LootrunStatistics.getChests;
 import static net.mcplayhd.lootrunstatistics.LootrunStatistics.getMythicsConfig;
 
 public class Mythic extends Item {
-
     private boolean enabled = true;
     private String displayName;
 
@@ -47,5 +46,4 @@ public class Mythic extends Item {
         getMythicsConfig().save(this);
         getChests().updateAllNotes();
     }
-
 }

@@ -27,5 +27,4 @@ public class DesktopHelper {
             getLogger().error("Couldn't open file", throwable);
         }
     }
-
 }

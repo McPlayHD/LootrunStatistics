@@ -138,5 +138,4 @@ public class LootrunStatistics {
         ClientCommandHandler.instance.registerCommand(new DryCommand());
         ClientCommandHandler.instance.registerCommand(new MainCommand());
     }
-
 }

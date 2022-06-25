@@ -18,7 +18,6 @@ import static net.mcplayhd.lootrunstatistics.LootrunStatistics.getConfiguration;
 import static net.mcplayhd.lootrunstatistics.LootrunStatistics.getPlayerLevel;
 
 public class NoteDrawer {
-
     private final ChestInfo chestInfo;
     private LootRunNote note;
 
@@ -116,5 +115,4 @@ public class NoteDrawer {
         if (note == null) return;
         note.drawNote(MinecraftChatColors.WHITE);
     }
-
 }

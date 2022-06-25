@@ -1,7 +1,6 @@
 package net.mcplayhd.lootrunstatistics.enums;
 
 public enum Tier {
-
     NORMAL("§7Normal"),
     UNIQUE("§eUnique"),
     RARE("§dRare"),
@@ -19,5 +18,4 @@ public enum Tier {
     public String getDisplayName() {
         return displayName;
     }
-
 }

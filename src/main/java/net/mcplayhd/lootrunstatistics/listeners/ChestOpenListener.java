@@ -31,7 +31,6 @@ import static net.mcplayhd.lootrunstatistics.LootrunStatistics.*;
 import static net.mcplayhd.lootrunstatistics.helpers.FormatterHelper.getFormatted;
 
 public class ChestOpenListener {
-
     private BlockPos chestLocation = null;
     private boolean chestConsidered = false;
     private int dryThisChest = 0;
@@ -222,5 +221,4 @@ public class ChestOpenListener {
             throwable.printStackTrace();
         }
     }
-
 }

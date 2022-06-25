@@ -32,5 +32,4 @@ public class GuiFactory implements IModGuiFactory {
     public Set<RuntimeOptionCategoryElement> runtimeGuiCategories() {
         return null;
     }
-
 }

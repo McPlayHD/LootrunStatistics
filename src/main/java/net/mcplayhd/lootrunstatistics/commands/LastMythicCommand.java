@@ -67,5 +67,4 @@ public class LastMythicCommand extends CommandBase implements IClientCommand {
             sender.sendMessage(new TextComponentString("§7  " + tier.getDisplayName() + "§7: §e" + getFormatted(dry)));
         }
     }
-
 }

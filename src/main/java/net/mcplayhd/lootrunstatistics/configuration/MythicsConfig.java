@@ -13,7 +13,6 @@ import static net.mcplayhd.lootrunstatistics.LootrunStatistics.MODID;
 import static net.mcplayhd.lootrunstatistics.LootrunStatistics.getPlayerUUID;
 
 public class MythicsConfig {
-
     private static final File file = new File(MODID + "/" + getPlayerUUID() + "/configs/mythicsConfig.json");
     private static final Gson gson = new GsonBuilder()
             .setPrettyPrinting()
@@ -58,5 +57,4 @@ public class MythicsConfig {
             this.displayName = mythic.getDisplayName();
         }
     }
-
 }
