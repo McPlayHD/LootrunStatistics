@@ -4,6 +4,7 @@ import net.mcplayhd.lootrunstatistics.api.WynncraftAPI;
 import net.mcplayhd.lootrunstatistics.enums.ArmorType;
 import net.mcplayhd.lootrunstatistics.enums.ItemType;
 import net.mcplayhd.lootrunstatistics.enums.Tier;
+import net.minecraft.util.text.TextFormatting;
 
 import static net.mcplayhd.lootrunstatistics.LootrunStatistics.getChests;
 import static net.mcplayhd.lootrunstatistics.LootrunStatistics.getMythicsConfig;
@@ -25,6 +26,16 @@ public class Mythic extends Item {
         for (Mythic mythic : WynncraftAPI.getMythics()) {
             getMythicsConfig().load(mythic);
         }
+    }
+
+    public static Mythic getMythicByName(String name) {
+        name = TextFormatting.getTextWithoutFormattingCodes(name);
+        if (name == null)
+            return null;
+        for (Mythic mythic : WynncraftAPI.getMythics())
+            if (name.contains(mythic.getName()))
+                return mythic;
+        return null;
     }
 
     public void setEnabled(boolean enabled) {

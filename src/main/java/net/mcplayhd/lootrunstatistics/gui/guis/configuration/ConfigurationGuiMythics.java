@@ -1,5 +1,6 @@
 package net.mcplayhd.lootrunstatistics.gui.guis.configuration;
 
+import net.mcplayhd.lootrunstatistics.LootrunStatistics;
 import net.mcplayhd.lootrunstatistics.api.WynncraftAPI;
 import net.mcplayhd.lootrunstatistics.enums.ItemType;
 import net.mcplayhd.lootrunstatistics.gui.CustomGui;
@@ -16,7 +17,7 @@ import java.util.Map;
 public class ConfigurationGuiMythics extends CustomGui {
 
     public ConfigurationGuiMythics(GuiScreen parentScreen) {
-        super(parentScreen);
+        super(parentScreen, 60, LootrunStatistics.NAME + " v" + LootrunStatistics.VERSION, "by McPlayHD");
     }
 
     @Override
@@ -39,7 +40,7 @@ public class ConfigurationGuiMythics extends CustomGui {
                         mythic.getName(),
                         mythic.getDisplayName(),
                         mythic::setDisplayName,
-                        width / 2 + 100 / 2 + 8, // center size 100, spacing column 8
+                        width / 2 + 100 / 2 + 6, // center size 100, spacing column 6
                         120,
                         lineHeight,
                         () -> mythic.isEnabled() ? "Enabled" : "Ignored",

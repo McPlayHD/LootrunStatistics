@@ -8,8 +8,8 @@ import net.minecraftforge.fml.client.config.GuiButtonExt;
 
 public class DrawableLineTextItemTextTextTextButton extends DrawableLine {
     private final String textLeftLeft;
-    private final ItemStackHandler itemHandlerLeftCenter;
-    private final String textLeftRight;
+    private final ItemStackHandler itemHandlerLeftCenterRight;
+    private final TextHandler textLeftRight;
     private final String textCenterLeft;
     private final String textCenterRight;
     private final GuiButton buttonRight;
@@ -18,8 +18,8 @@ public class DrawableLineTextItemTextTextTextButton extends DrawableLine {
 
     public DrawableLineTextItemTextTextTextButton(int id,
                                                   String textLeftLeft,
-                                                  ItemStackHandler itemHandlerLeftCenter,
-                                                  String textLeftRight,
+                                                  ItemStackHandler itemHandlerLeftCenterRight,
+                                                  TextHandler textLeftRight,
                                                   String textCenterLeft,
                                                   String textCenterRight,
                                                   int buttonX,
@@ -29,7 +29,7 @@ public class DrawableLineTextItemTextTextTextButton extends DrawableLine {
                                                   Runnable onButtonPressed) {
         super(id);
         this.textLeftLeft = textLeftLeft;
-        this.itemHandlerLeftCenter = itemHandlerLeftCenter;
+        this.itemHandlerLeftCenterRight = itemHandlerLeftCenterRight;
         this.textLeftRight = textLeftRight;
         this.textCenterLeft = textCenterLeft;
         this.textCenterRight = textCenterRight;
@@ -42,12 +42,12 @@ public class DrawableLineTextItemTextTextTextButton extends DrawableLine {
         return textLeftLeft;
     }
 
-    public ItemStack getItemLeftCenter() {
-        return itemHandlerLeftCenter.getItemStack();
+    public ItemStack getItemLeftCenterRight() {
+        return itemHandlerLeftCenterRight.getItemStack();
     }
 
     public String getTextLeftRight() {
-        return textLeftRight;
+        return textLeftRight.getText();
     }
 
     public String getTextCenterLeft() {
@@ -56,6 +56,10 @@ public class DrawableLineTextItemTextTextTextButton extends DrawableLine {
 
     public String getTextCenterRight() {
         return textCenterRight;
+    }
+
+    public String getRightButtonText() {
+        return buttonTextHandler.getText();
     }
 
     @Override
@@ -73,6 +77,6 @@ public class DrawableLineTextItemTextTextTextButton extends DrawableLine {
     public void rightButtonPressed() {
         if (onButtonPressed == null) return;
         onButtonPressed.run();
-        buttonRight.displayString = buttonTextHandler.getText();
+        buttonRight.displayString = getRightButtonText();
     }
 }

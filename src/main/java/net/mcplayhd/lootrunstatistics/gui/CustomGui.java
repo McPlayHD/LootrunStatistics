@@ -1,6 +1,5 @@
 package net.mcplayhd.lootrunstatistics.gui;
 
-import net.mcplayhd.lootrunstatistics.LootrunStatistics;
 import net.mcplayhd.lootrunstatistics.gui.drawables.*;
 import net.mcplayhd.lootrunstatistics.helpers.ItemStackHelper;
 import net.minecraft.client.Minecraft;
@@ -22,8 +21,10 @@ import java.util.List;
 public class CustomGui extends GuiScreen {
     public static final int lineSpace = 5;
     public static final int lineHeight = 20;
-    public static final int columnSpace = 8;
-    public static final int spaceTop = 60;
+    public static final int columnSpace = 6;
+    private final int spaceTop;
+    private final String title;
+    private final String subtitle;
     public static final int spaceBottom = 40;
     // idea to only open the gui one tick later from https://github.com/albarv340/chestcountmod
     public static CustomGui shouldBeDrawn = null;
@@ -33,8 +34,11 @@ public class CustomGui extends GuiScreen {
 
     private int scrollPosition = 0;
 
-    public CustomGui(GuiScreen parentScreen) {
+    public CustomGui(GuiScreen parentScreen, int spaceTop, String title, String subtitle) {
         this.parentScreen = parentScreen;
+        this.spaceTop = spaceTop;
+        this.title = title;
+        this.subtitle = subtitle;
     }
 
     @Override
@@ -58,11 +62,16 @@ public class CustomGui extends GuiScreen {
         return (height - spaceTop - spaceBottom) / (lineSpace * 2 + lineHeight);
     }
 
+    public void scrollToBottom() {
+        scrollPosition = lines.size() - getMaxLines();
+    }
+
     private void addButtonsAndSetLinePositions() {
         buttonList = new ArrayList<>();
         int y = spaceTop;
         for (DrawableLine line : lines) {
-            if (line.getId() < scrollPosition || line.getId() >= scrollPosition + getMaxLines()) continue;
+            if (line.getId() < scrollPosition || line.getId() >= scrollPosition + getMaxLines())
+                continue;
             y += lineSpace;
             line.setY(y);
             if (line.getRightButton() != null) {
@@ -93,8 +102,10 @@ public class CustomGui extends GuiScreen {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         this.drawDefaultBackground();
-        this.drawCenteredString(fontRenderer, LootrunStatistics.NAME + " v" + LootrunStatistics.VERSION, width / 2, spaceTop / 3 - (lineHeight - 8) / 2, new Color(255, 255, 255).getRGB());
-        this.drawCenteredString(fontRenderer, "by McPlayHD", width / 2, spaceTop * 2 / 3 - (lineHeight - 8) / 2, new Color(255, 255, 255).getRGB());
+        this.drawCenteredString(fontRenderer, title, width / 2, spaceTop / (subtitle == null ? 2 : 3) - (lineHeight - 8) / 2, new Color(255, 255, 255).getRGB());
+        if (subtitle != null) {
+            this.drawCenteredString(fontRenderer, subtitle, width / 2, spaceTop * 2 / 3 - (lineHeight - 8) / 2, new Color(255, 255, 255).getRGB());
+        }
 
         int maxLeftTextWidth = 0;
         for (DrawableLine line : lines) {
@@ -144,16 +155,21 @@ public class CustomGui extends GuiScreen {
                 }
             }
             if (line instanceof DrawableLineTextItemTextTextTextButton) {
-                int leftWidth = 120;
-                int centerWidth = 100;
+                int totalWidth = 420; // everyone that players with a smaller width is weird.
+                int leftWidth = 170;
+                int centerWidth = 150;
+                int rightWidth = 100;
                 DrawableLineTextItemTextTextTextButton line1 = (DrawableLineTextItemTextTextTextButton) line;
-                this.drawString(fontRenderer, line1.getTextLeftLeft(), width / 2 - centerWidth / 2 - columnSpace - leftWidth, y + (lineHeight - 8) / 2, new Color(255, 255, 255).getRGB());
-                this.drawItemStack(line1.getItemLeftCenter(), width / 2 - centerWidth / 2 - columnSpace - leftWidth + 20, y + 1, false, "", false);
-                if (isHovered(mouseX, mouseY, width / 2 - centerWidth / 2 - columnSpace - leftWidth + 25, y + 1, 16, 16)) {
-                    hoveringText.add(line1.getItemLeftCenter().getDisplayName());
-                    hoveringText.addAll(ItemStackHelper.getLore(line1.getItemLeftCenter()));
+                this.drawString(fontRenderer, line1.getTextLeftLeft(), width / 2 - totalWidth / 2, y + (lineHeight - 8) / 2, new Color(255, 255, 255).getRGB());
+                this.drawItemStack(line1.getItemLeftCenterRight(), width / 2 - totalWidth / 2 + 18 + columnSpace, y + 1, false, "", false);
+                if (isHovered(mouseX, mouseY, width / 2 - totalWidth / 2 + 18 + columnSpace, y + 1, 16, 16)) {
+                    hoveringText.add(line1.getItemLeftCenterRight().getDisplayName());
+                    hoveringText.addAll(ItemStackHelper.getLore(line1.getItemLeftCenterRight()));
                 }
-                this.drawString(fontRenderer, line1.getTextLeftRight(), width / 2 - centerWidth / 2 - columnSpace - leftWidth + 20 + 20, y + (lineHeight - 8) / 2, new Color(137, 50, 183).getRGB());
+                this.drawString(fontRenderer, line1.getTextLeftRight(), width / 2 - totalWidth / 2 + 18 + 16 + 2 * columnSpace, y + (lineHeight - 8) / 2, new Color(255, 255, 255).getRGB());
+                this.drawString(fontRenderer, line1.getTextCenterLeft(), width / 2 - totalWidth / 2 + leftWidth, y + (lineHeight - 8) / 2, new Color(255, 255, 255).getRGB());
+                this.drawString(fontRenderer, line1.getTextCenterRight(), width / 2 - totalWidth / 2 + leftWidth + 80 + columnSpace / 2, y + (lineHeight - 8) / 2, new Color(255, 255, 255).getRGB());
+                line.getRightButton().displayString = line1.getRightButtonText();
             }
         }
 

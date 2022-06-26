@@ -11,6 +11,10 @@ public class MythicFindItem {
     private final String displayName;
     private final String nbtTagCompound;
 
+    public String getDisplayName() {
+        return displayName;
+    }
+
     public MythicFindItem(String material, String displayName, NBTTagCompound nbtTagCompound) throws IOException {
         this.material = material;
         this.displayName = displayName;

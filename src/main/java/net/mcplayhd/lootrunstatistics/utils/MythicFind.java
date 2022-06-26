@@ -1,14 +1,18 @@
 package net.mcplayhd.lootrunstatistics.utils;
 
+import net.mcplayhd.lootrunstatistics.chests.utils.MinMax;
+import net.mcplayhd.lootrunstatistics.enums.ItemType;
 import net.mcplayhd.lootrunstatistics.enums.Tier;
 import net.mcplayhd.lootrunstatistics.helpers.ItemStackHelper;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.text.TextFormatting;
 
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class MythicFind {
     private final String mythic;
@@ -42,6 +46,22 @@ public class MythicFind {
         }
     }
 
+    public ItemType getType() {
+        String mythic = Objects.requireNonNull(TextFormatting.getTextWithoutFormattingCodes(this.mythic));
+        for (ItemType itemType : ItemType.values())
+            if (mythic.contains(itemType.getName()))
+                return itemType;
+        return null;
+    }
+
+    public MinMax getBoxMinMax() {
+        String mythic = Objects.requireNonNull(TextFormatting.getTextWithoutFormattingCodes(this.mythic));
+        String[] boxRangeSplit = mythic.replace("Lv. Range: ", "\n").split("\n")[1].split("-");
+        int boxMin = Integer.parseInt(boxRangeSplit[0]) + 1; // apparently the lower bound can't be in boxes
+        int boxMax = Integer.parseInt(boxRangeSplit[1]);
+        return new MinMax(boxMin, boxMax);
+    }
+
     public ItemStack getItem() {
         if (mythicFindItem == null) { // return a box
             // TODO: 25/06/2022 add lore
@@ -56,7 +76,12 @@ public class MythicFind {
     }
 
     public String getMythic() {
-        return mythic;
+        if (mythicFindItem == null) {
+            MinMax minMax = getBoxMinMax();
+            return "§5" + getType().getName() + " §a- §7Lv. §f" + (minMax.getMin() - 1) + "-" + minMax.getMax();
+        } else {
+            return mythicFindItem.getDisplayName();
+        }
     }
 
     public int getChestCount() {
