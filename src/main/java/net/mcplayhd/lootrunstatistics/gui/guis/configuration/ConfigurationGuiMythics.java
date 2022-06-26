@@ -1,4 +1,4 @@
-package net.mcplayhd.lootrunstatistics.gui.configuration;
+package net.mcplayhd.lootrunstatistics.gui.guis.configuration;
 
 import net.mcplayhd.lootrunstatistics.api.WynncraftAPI;
 import net.mcplayhd.lootrunstatistics.enums.ItemType;
