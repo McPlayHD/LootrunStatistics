@@ -4,7 +4,7 @@ A mod for Wynncraft that records your lootrun statistics.
 
 ## Installation
 
-[Download](https://github.com/McPlayHD/LootrunStatistics/releases/download/v1.0.0/lootrunstatistics-1.0.0.jar) the
+[Download](https://github.com/McPlayHD/LootrunStatistics/releases/download/v1.0.1/lootrunstatistics-1.0.1.jar) the
 latest version of the mod.
 
 You can find specific versions of the mod in the [Releases](https://github.com/McPlayHD/LootrunStatistics/releases) page
