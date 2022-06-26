@@ -48,6 +48,7 @@ public class MainCommand extends CommandBase implements IClientCommand {
 
     @Override
     public void execute(@Nonnull MinecraftServer server, @Nonnull ICommandSender sender, @Nonnull String[] args) {
+        // TODO: 26/06/2022 reload (all .json files)
         if (args.length > 0 && args[0].equalsIgnoreCase("update")) {
             try {
                 String version = VersionHelper.getOnlineVersion();
