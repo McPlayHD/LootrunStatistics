@@ -11,7 +11,6 @@ import java.util.*;
 import static net.mcplayhd.lootrunstatistics.LootrunStatistics.getLogger;
 
 public class ChestInfo {
-
     protected Loc loc;
     protected int tier;
     protected Map<ItemType, LevelMap> itemInfos = new HashMap<>();
@@ -145,5 +144,4 @@ public class ChestInfo {
     public void drawNote() {
         getNoteDrawer().drawNote();
     }
-
 }

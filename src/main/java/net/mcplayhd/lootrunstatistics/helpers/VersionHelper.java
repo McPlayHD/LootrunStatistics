@@ -6,7 +6,6 @@ import net.mcplayhd.lootrunstatistics.api.exceptions.APIOfflineException;
 import static net.mcplayhd.lootrunstatistics.LootrunStatistics.getLogger;
 
 public class VersionHelper {
-
     private static String newVersion = "unchecked";
 
     public static String getOnlineVersion() throws APIOfflineException {
@@ -54,5 +53,4 @@ public class VersionHelper {
         newVersion = null;
         return null;
     }
-
 }

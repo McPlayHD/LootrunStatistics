@@ -70,5 +70,4 @@ public class StatsImporter {
     static class WynntilsUtilitiesMain {
         int dryStreakCount;
     }
-
 }

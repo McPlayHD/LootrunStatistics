@@ -17,6 +17,7 @@ import java.util.Date;
 import static net.mcplayhd.lootrunstatistics.LootrunStatistics.*;
 
 public class ConfigurationGuiMain extends CustomGui {
+
     public ConfigurationGuiMain(GuiScreen parentScreen) {
         super(parentScreen);
     }

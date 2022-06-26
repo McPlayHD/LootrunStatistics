@@ -1,7 +1,6 @@
 package net.mcplayhd.lootrunstatistics.enums;
 
 public enum ItemType {
-
     HELMET("Helmet"),
     CHESTPLATE("Chestplate"),
     LEGGINGS("Leggings"),
@@ -28,5 +27,4 @@ public enum ItemType {
     public boolean isAccessory() {
         return this == NECKLACE || this == RING || this == BRACELET;
     }
-
 }

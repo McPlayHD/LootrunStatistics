@@ -56,5 +56,4 @@ public class DryCommand extends CommandBase implements IClientCommand {
         int total = getChestCountData().getTotalChests();
         sender.sendMessage(new TextComponentString("§eChests dry§7: " + getFormattedDry(dry) + " §etotal§7: §3" + getFormatted(total)));
     }
-
 }

@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ConfigurationGuiMythics extends CustomGui {
+
     public ConfigurationGuiMythics(GuiScreen parentScreen) {
         super(parentScreen);
     }

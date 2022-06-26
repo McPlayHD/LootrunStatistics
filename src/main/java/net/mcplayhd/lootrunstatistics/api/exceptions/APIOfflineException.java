@@ -5,5 +5,4 @@ public class APIOfflineException extends Exception {
     public APIOfflineException(String message) {
         super(message);
     }
-
 }

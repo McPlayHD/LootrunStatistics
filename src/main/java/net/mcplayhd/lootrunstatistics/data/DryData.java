@@ -14,7 +14,6 @@ import static net.mcplayhd.lootrunstatistics.LootrunStatistics.MODID;
 import static net.mcplayhd.lootrunstatistics.LootrunStatistics.getPlayerUUID;
 
 public class DryData {
-
     private static final File file = new File(MODID + "/" + getPlayerUUID() + "/dry.json");
     private static final Gson gson = new GsonBuilder()
             .setPrettyPrinting()
@@ -75,5 +74,4 @@ public class DryData {
             ex.printStackTrace();
         }
     }
-
 }

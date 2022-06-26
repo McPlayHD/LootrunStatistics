@@ -32,5 +32,4 @@ public class FormatterHelper {
             return "§c" + formatted;
         return "§4" + formatted;
     }
-
 }

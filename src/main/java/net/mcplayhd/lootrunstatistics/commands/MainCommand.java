@@ -63,5 +63,4 @@ public class MainCommand extends CommandBase implements IClientCommand {
         // `null` because I don't want the chat box to open again when closing the inventory.
         CustomGui.shouldBeDrawn = GuiFactory.getMainGui(null);
     }
-
 }

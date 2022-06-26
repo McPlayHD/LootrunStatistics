@@ -18,7 +18,6 @@ import static net.mcplayhd.lootrunstatistics.LootrunStatistics.getConfiguration;
 import static net.mcplayhd.lootrunstatistics.LootrunStatistics.getPlayerLevel;
 
 public class NoteDrawer {
-
     private final ChestInfo chestInfo;
     private LootRunNote note;
 
@@ -86,12 +85,12 @@ public class NoteDrawer {
                         if (note.length() > 0) {
                             note.append("\\n");
                         }
-                        note.append("&5");
                         boolean first = true;
-                        // TODO: 12/06/2022 maybe setting to group
                         for (Map.Entry<ItemType, Set<Mythic>> entry : possiblePerType.entrySet()) {
                             for (Mythic mythic : entry.getValue()) {
-                                note.append(first ? "" : "&7, &5").append(mythic.getDisplayName());
+                                String displayName = "§5" + mythic.getDisplayName();
+                                displayName = displayName.replace(" ", " &5");
+                                note.append(first ? "" : "&7, ").append(displayName);
                                 first = false;
                             }
                         }
@@ -116,5 +115,4 @@ public class NoteDrawer {
         if (note == null) return;
         note.drawNote(MinecraftChatColors.WHITE);
     }
-
 }

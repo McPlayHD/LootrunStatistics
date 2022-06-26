@@ -9,7 +9,6 @@ import java.io.File;
 import static net.mcplayhd.lootrunstatistics.LootrunStatistics.*;
 
 public class Configuration {
-
     private static final File file = new File(MODID + "/" + getPlayerUUID() + "/configs/configuration.json");
     private static final Gson gson = new GsonBuilder()
             .setPrettyPrinting()
@@ -124,5 +123,4 @@ public class Configuration {
             return separator;
         }
     }
-
 }

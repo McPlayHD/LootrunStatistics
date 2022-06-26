@@ -13,5 +13,4 @@ public class ItemStackHelper {
         itemStack.setTagCompound(tag);
         return itemStack;
     }
-
 }

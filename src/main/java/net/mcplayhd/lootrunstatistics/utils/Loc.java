@@ -3,7 +3,6 @@ package net.mcplayhd.lootrunstatistics.utils;
 import java.util.Objects;
 
 public class Loc {
-
     private int x, y, z;
 
     public Loc(int x, int y, int z) {
@@ -66,5 +65,4 @@ public class Loc {
     public int hashCode() {
         return Objects.hash(x, y, z);
     }
-
 }

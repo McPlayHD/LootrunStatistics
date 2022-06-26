@@ -14,7 +14,6 @@ import java.util.List;
 import static net.mcplayhd.lootrunstatistics.LootrunStatistics.*;
 
 public class MythicFindsData {
-
     private static final File file = new File(MODID + "/" + getPlayerUUID() + "/mythicFinds.json");
     private static final Gson gson = new GsonBuilder()
             .setDateFormat("yyyy-MM-dd HH:mm:ss.SSS")
@@ -67,5 +66,4 @@ public class MythicFindsData {
             ex.printStackTrace();
         }
     }
-
 }

@@ -15,7 +15,6 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import static net.mcplayhd.lootrunstatistics.LootrunStatistics.*;
 
 public class RenderListener {
-
     private int lastPlayerLevel = 0;
     private boolean seenPlayerOverLevel0 = false;
 
@@ -55,5 +54,4 @@ public class RenderListener {
         }
         getChests().drawNotes();
     }
-
 }

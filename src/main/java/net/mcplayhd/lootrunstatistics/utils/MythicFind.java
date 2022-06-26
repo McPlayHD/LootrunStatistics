@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MythicFind {
-
     private final String mythic;
     private final int chestCount;
     private final int dry;
@@ -63,5 +62,4 @@ public class MythicFind {
     public int getEmeraldsDry() {
         return emeraldsDry;
     }
-
 }
