@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import net.mcplayhd.lootrunstatistics.gui.CustomGui;
 import net.mcplayhd.lootrunstatistics.gui.GuiFactory;
 import net.mcplayhd.lootrunstatistics.gui.guis.configuration.ConfigurationGuiMain;
+import net.mcplayhd.lootrunstatistics.gui.guis.history.HistoryGuiMythics;
 import net.mcplayhd.lootrunstatistics.helpers.DesktopHelper;
 import net.mcplayhd.lootrunstatistics.helpers.VersionHelper;
 import net.minecraft.command.CommandBase;
@@ -62,6 +63,10 @@ public class MainCommand extends CommandBase implements IClientCommand {
         }
         if (args.length > 0 && (args[0].equalsIgnoreCase("settings") || args[0].equalsIgnoreCase("config"))) {
             CustomGui.shouldBeDrawn = new ConfigurationGuiMain(null);
+            return;
+        }
+        if (args.length > 0 && args[0].equalsIgnoreCase("history")) {
+            CustomGui.shouldBeDrawn = new HistoryGuiMythics(null);
             return;
         }
         // I can't open the gui immediately because the chat close event will also update the currentScreen.

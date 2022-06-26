@@ -8,6 +8,7 @@ import net.mcplayhd.lootrunstatistics.utils.Loc;
 import net.mcplayhd.lootrunstatistics.utils.MythicFind;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -49,6 +50,10 @@ public class MythicFindsData {
         mythicFinds.add(find);
         save();
         getDryData().reset();
+    }
+
+    public List<MythicFind> getMythicFinds() {
+        return new ArrayList<>(this.mythicFinds);
     }
 
     public MythicFind getLastMythic() {

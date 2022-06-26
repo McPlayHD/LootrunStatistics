@@ -1,10 +1,8 @@
 package net.mcplayhd.lootrunstatistics.gui;
 
 import net.mcplayhd.lootrunstatistics.LootrunStatistics;
-import net.mcplayhd.lootrunstatistics.gui.drawables.DrawableLine;
-import net.mcplayhd.lootrunstatistics.gui.drawables.DrawableLineItemTextTextAreaButton;
-import net.mcplayhd.lootrunstatistics.gui.drawables.DrawableLineTextCenterSubtitle;
-import net.mcplayhd.lootrunstatistics.gui.drawables.DrawableLineTextLeftButtonRight;
+import net.mcplayhd.lootrunstatistics.gui.drawables.*;
+import net.mcplayhd.lootrunstatistics.helpers.ItemStackHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -106,6 +104,7 @@ public class CustomGui extends GuiScreen {
             }
         }
 
+        List<String> hoveringText = new ArrayList<>();
         int maxLines = getMaxLines();
         for (DrawableLine line : lines) {
             if (line.getId() < scrollPosition || line.getId() >= scrollPosition + maxLines) {
@@ -144,9 +143,29 @@ public class CustomGui extends GuiScreen {
                     centerTextField.drawTextBox();
                 }
             }
+            if (line instanceof DrawableLineTextItemTextTextTextButton) {
+                int leftWidth = 120;
+                int centerWidth = 100;
+                DrawableLineTextItemTextTextTextButton line1 = (DrawableLineTextItemTextTextTextButton) line;
+                this.drawString(fontRenderer, line1.getTextLeftLeft(), width / 2 - centerWidth / 2 - columnSpace - leftWidth, y + (lineHeight - 8) / 2, new Color(255, 255, 255).getRGB());
+                this.drawItemStack(line1.getItemLeftCenter(), width / 2 - centerWidth / 2 - columnSpace - leftWidth + 20, y + 1, false, "", false);
+                if (isHovered(mouseX, mouseY, width / 2 - centerWidth / 2 - columnSpace - leftWidth + 25, y + 1, 16, 16)) {
+                    hoveringText.add(line1.getItemLeftCenter().getDisplayName());
+                    hoveringText.addAll(ItemStackHelper.getLore(line1.getItemLeftCenter()));
+                }
+                this.drawString(fontRenderer, line1.getTextLeftRight(), width / 2 - centerWidth / 2 - columnSpace - leftWidth + 20 + 20, y + (lineHeight - 8) / 2, new Color(137, 50, 183).getRGB());
+            }
         }
 
         super.drawScreen(mouseX, mouseY, partialTicks);
+
+        if (!hoveringText.isEmpty()) {
+            drawHoveringText(hoveringText, mouseX, mouseY);
+        }
+    }
+
+    private boolean isHovered(int mouseX, int mouseY, int x, int y, int width, int height) {
+        return mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height;
     }
 
     @Override
