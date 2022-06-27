@@ -1,14 +1,19 @@
 package net.mcplayhd.lootrunstatistics.gui.drawables;
 
 import net.mcplayhd.lootrunstatistics.gui.handlers.ItemStackHandler;
+import net.mcplayhd.lootrunstatistics.gui.handlers.LoreHandler;
 import net.mcplayhd.lootrunstatistics.gui.handlers.TextHandler;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
 
-public class DrawableLineTextItemTextTextTextButton extends DrawableLine {
+import java.util.List;
+
+public class LineMythicFindHistoryEntry extends DrawableLine {
     private final String textLeftLeft;
     private final ItemStackHandler itemHandlerLeftCenterRight;
+    private final Runnable onItemStackClicked;
+    private final LoreHandler itemStackLoreHandler;
     private final TextHandler textLeftRight;
     private final String textCenterLeft;
     private final String textCenterRight;
@@ -16,20 +21,24 @@ public class DrawableLineTextItemTextTextTextButton extends DrawableLine {
     private final TextHandler buttonTextHandler;
     private final Runnable onButtonPressed;
 
-    public DrawableLineTextItemTextTextTextButton(int id,
-                                                  String textLeftLeft,
-                                                  ItemStackHandler itemHandlerLeftCenterRight,
-                                                  TextHandler textLeftRight,
-                                                  String textCenterLeft,
-                                                  String textCenterRight,
-                                                  int buttonX,
-                                                  int buttonWidth,
-                                                  int buttonHeight,
-                                                  TextHandler buttonTextHandler,
-                                                  Runnable onButtonPressed) {
+    public LineMythicFindHistoryEntry(int id,
+                                      String textLeftLeft,
+                                      ItemStackHandler itemHandlerLeftCenterRight,
+                                      Runnable onItemStackClicked,
+                                      LoreHandler itemStackLoreHandler,
+                                      TextHandler textLeftRight,
+                                      String textCenterLeft,
+                                      String textCenterRight,
+                                      int buttonX,
+                                      int buttonWidth,
+                                      int buttonHeight,
+                                      TextHandler buttonTextHandler,
+                                      Runnable onButtonPressed) {
         super(id);
         this.textLeftLeft = textLeftLeft;
         this.itemHandlerLeftCenterRight = itemHandlerLeftCenterRight;
+        this.onItemStackClicked = onItemStackClicked;
+        this.itemStackLoreHandler = itemStackLoreHandler;
         this.textLeftRight = textLeftRight;
         this.textCenterLeft = textCenterLeft;
         this.textCenterRight = textCenterRight;
@@ -44,6 +53,15 @@ public class DrawableLineTextItemTextTextTextButton extends DrawableLine {
 
     public ItemStack getItemLeftCenterRight() {
         return itemHandlerLeftCenterRight.getItemStack();
+    }
+
+    public void onItemStackClicked() {
+        if (onItemStackClicked == null) return;
+        onItemStackClicked.run();
+    }
+
+    public List<String> getItemStackLore() {
+        return itemStackLoreHandler.getLore();
     }
 
     public String getTextLeftRight() {

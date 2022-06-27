@@ -10,7 +10,7 @@ import net.mcplayhd.lootrunstatistics.utils.Mythic;
 import net.minecraft.client.gui.GuiScreen;
 
 import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,7 +32,7 @@ public class ConfigurationGuiMythics extends CustomGui {
             ArrayList<Mythic> mythics = mythicsByType.get(type);
             if (mythics == null) continue;
             addLine(new DrawableLineTextCenterSubtitle(++id, type.getName()));
-            mythics.sort(Comparator.comparingInt(Mythic::getLevel));
+            Collections.sort(mythics);
             for (Mythic mythic : mythics) {
                 addLine(new DrawableLineItemTextTextAreaButton(
                         ++id,

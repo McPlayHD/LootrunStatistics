@@ -9,7 +9,7 @@ import net.minecraft.util.text.TextFormatting;
 import static net.mcplayhd.lootrunstatistics.LootrunStatistics.getChests;
 import static net.mcplayhd.lootrunstatistics.LootrunStatistics.getMythicsConfig;
 
-public class Mythic extends Item {
+public class Mythic extends Item implements Comparable<Mythic> {
     private boolean enabled = true;
     private String displayName;
 
@@ -56,5 +56,12 @@ public class Mythic extends Item {
         this.displayName = displayName;
         getMythicsConfig().save(this);
         getChests().updateAllNotes();
+    }
+
+    @Override
+    public int compareTo(Mythic other) {
+        if (getLevel() != other.getLevel())
+            return Integer.compare(getLevel(), other.getLevel());
+        return getName().compareTo(other.getName());
     }
 }

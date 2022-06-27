@@ -1,7 +1,6 @@
 package net.mcplayhd.lootrunstatistics.gui;
 
 import net.mcplayhd.lootrunstatistics.gui.drawables.*;
-import net.mcplayhd.lootrunstatistics.helpers.ItemStackHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -154,17 +153,16 @@ public class CustomGui extends GuiScreen {
                     centerTextField.drawTextBox();
                 }
             }
-            if (line instanceof DrawableLineTextItemTextTextTextButton) {
+            if (line instanceof LineMythicFindHistoryEntry) {
                 int totalWidth = 420; // everyone that players with a smaller width is weird.
                 int leftWidth = 170;
                 int centerWidth = 150;
                 int rightWidth = 100;
-                DrawableLineTextItemTextTextTextButton line1 = (DrawableLineTextItemTextTextTextButton) line;
+                LineMythicFindHistoryEntry line1 = (LineMythicFindHistoryEntry) line;
                 this.drawString(fontRenderer, line1.getTextLeftLeft(), width / 2 - totalWidth / 2, y + (lineHeight - 8) / 2, new Color(255, 255, 255).getRGB());
                 this.drawItemStack(line1.getItemLeftCenterRight(), width / 2 - totalWidth / 2 + 18 + columnSpace, y + 1, false, "", false);
                 if (isHovered(mouseX, mouseY, width / 2 - totalWidth / 2 + 18 + columnSpace, y + 1, 16, 16)) {
-                    hoveringText.add(line1.getItemLeftCenterRight().getDisplayName());
-                    hoveringText.addAll(ItemStackHelper.getLore(line1.getItemLeftCenterRight()));
+                    hoveringText.addAll(line1.getItemStackLore());
                 }
                 this.drawString(fontRenderer, line1.getTextLeftRight(), width / 2 - totalWidth / 2 + 18 + 16 + 2 * columnSpace, y + (lineHeight - 8) / 2, new Color(255, 255, 255).getRGB());
                 this.drawString(fontRenderer, line1.getTextCenterLeft(), width / 2 - totalWidth / 2 + leftWidth, y + (lineHeight - 8) / 2, new Color(255, 255, 255).getRGB());
@@ -239,14 +237,21 @@ public class CustomGui extends GuiScreen {
     @Override
     public void handleMouseInput() throws IOException {
         super.handleMouseInput();
-        int x = Mouse.getEventX() * this.width / this.mc.displayWidth;
-        int y = this.height - Mouse.getEventY() * this.height / this.mc.displayHeight - 1;
+        int clickX = Mouse.getEventX() * this.width / this.mc.displayWidth;
+        int clickY = this.height - Mouse.getEventY() * this.height / this.mc.displayHeight - 1;
         int mouseButton = Mouse.getEventButton();
         if (mouseButton != -1 && Mouse.getEventButtonState()) {
             for (DrawableLine line : lines) {
                 if (line instanceof DrawableLineItemTextTextAreaButton) {
                     if (line.getCenterTextField() != null) {
-                        line.getCenterTextField().mouseClicked(x, y, mouseButton);
+                        line.getCenterTextField().mouseClicked(clickX, clickY, mouseButton);
+                    }
+                }
+                if (line instanceof LineMythicFindHistoryEntry) {
+                    int y = line.getY();
+                    int totalWidth = 420; // everyone that players with a smaller width is weird.
+                    if (isHovered(clickX, clickY, width / 2 - totalWidth / 2 + 18 + columnSpace, y + 1, 16, 16)) {
+                        ((LineMythicFindHistoryEntry) line).onItemStackClicked();
                     }
                 }
             }

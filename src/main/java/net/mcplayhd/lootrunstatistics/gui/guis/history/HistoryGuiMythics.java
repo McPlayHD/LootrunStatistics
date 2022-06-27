@@ -1,14 +1,18 @@
 package net.mcplayhd.lootrunstatistics.gui.guis.history;
 
 import net.mcplayhd.lootrunstatistics.gui.CustomGui;
-import net.mcplayhd.lootrunstatistics.gui.drawables.DrawableLineTextItemTextTextTextButton;
+import net.mcplayhd.lootrunstatistics.gui.drawables.LineMythicFindHistoryEntry;
 import net.mcplayhd.lootrunstatistics.gui.utils.ButtonText;
 import net.mcplayhd.lootrunstatistics.helpers.FormatterHelper;
+import net.mcplayhd.lootrunstatistics.helpers.ItemStackHelper;
 import net.mcplayhd.lootrunstatistics.utils.Mythic;
 import net.mcplayhd.lootrunstatistics.utils.MythicFind;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.item.ItemStack;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static net.mcplayhd.lootrunstatistics.LootrunStatistics.getMythicFindsData;
 
@@ -38,18 +42,42 @@ public class HistoryGuiMythics extends CustomGui {
                 chestCountText = "§8~" + chestCountText;
                 dryCountText = "§8~" + dryCountText;
             }
-            addLine(new DrawableLineTextItemTextTextTextButton(
+            addLine(new LineMythicFindHistoryEntry(
                     ++id,
                     "#" + mythicNumber++,
                     mythicFind::getItem,
-                    mythicFind::getMythic,
+                    () -> {
+                        if (mythicFind.getMythicFindItem() != null)
+                            return;
+                        mythicFind.toggleMythicFindMythic();
+                        getMythicFindsData().save();
+                    },
+                    () -> {
+                        List<String> lore = new ArrayList<>();
+                        if (mythicFind.getMythicFindItem() != null) {
+                            ItemStack itemStack = mythicFind.getItem();
+                            lore.add(itemStack.getDisplayName());
+                            lore.addAll(ItemStackHelper.getLore(itemStack));
+                        } else {
+                            Mythic current = mythicFind.getMythic();
+                            List<Mythic> possible = mythicFind.getPossibleMythics();
+                            lore.add(mythicFind.getBoxTitle());
+                            lore.add("§7 ");
+                            for (Mythic mythic : possible) {
+                                lore.add((mythic == current ? "⬠" : "§7• ") + " §5" + mythic.getName());
+                            }
+                            lore.add("§7 ");
+                            lore.add("§eClick to toggle.");
+                        }
+                        return lore;
+                    },
+                    mythicFind::getMythicFindTitle,
                     chestCountText,
                     dryCountText,
                     width / 2 - totalWidth / 2 + leftWidth + centerWidth + 6 / 2, // spacing 6
                     100 - 6 / 2, // right width, spacing 6
                     lineHeight,
                     buttonText::getText,
-                    // TODO: 25/06/2022 add different way to set mythic if you don't have the item anymore
                     () -> {
                         if (mythicFind.getMythicFindItem() != null) {
                             mythicFind.setMythicFindItem(null);

@@ -1,5 +1,6 @@
 package net.mcplayhd.lootrunstatistics.utils;
 
+import net.mcplayhd.lootrunstatistics.api.WynncraftAPI;
 import net.mcplayhd.lootrunstatistics.chests.utils.MinMax;
 import net.mcplayhd.lootrunstatistics.enums.ItemType;
 import net.mcplayhd.lootrunstatistics.enums.Tier;
@@ -9,10 +10,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 
 import java.io.IOException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class MythicFind {
     private final String mythic;
@@ -23,6 +21,7 @@ public class MythicFind {
     private final Date time;
     private final Map<Tier, Integer> itemsDry;
     private final int emeraldsDry;
+    private String mythicFindMythic;
     private MythicFindItem mythicFindItem;
 
     public MythicFind(String mythic, int chestCount, int dry, int x, int y, int z, Date time, Map<Tier, Integer> itemsDry, int emeraldsDry) {
@@ -36,6 +35,38 @@ public class MythicFind {
         this.time = time;
         this.itemsDry = itemsDry;
         this.emeraldsDry = emeraldsDry;
+    }
+
+    public void toggleMythicFindMythic() {
+        Mythic current = getMythic();
+        List<Mythic> possible = getPossibleMythics();
+        int currentIndex = current == null ? -1 : possible.indexOf(current);
+        currentIndex++;
+        if (currentIndex == possible.size()) {
+            mythicFindMythic = null;
+        } else {
+            mythicFindMythic = possible.get(currentIndex).getName();
+        }
+    }
+
+    public List<Mythic> getPossibleMythics() {
+        List<Mythic> possible = new ArrayList<>();
+        MinMax boxMinMax = getBoxMinMax();
+        for (Item item : WynncraftAPI.getItems(getType(), Tier.MYTHIC)) {
+            if (boxMinMax.isInRange(item.getLevel())) {
+                possible.add((Mythic) item);
+            }
+        }
+        Collections.sort(possible);
+        return possible;
+    }
+
+    public Mythic getMythic() {
+        if (mythicFindItem != null)
+            return Mythic.getMythicByName(mythicFindItem.getDisplayName());
+        if (mythicFindMythic != null)
+            return Mythic.getMythicByName(mythicFindMythic);
+        return null;
     }
 
     public MythicFindItem getMythicFindItem() {
@@ -85,13 +116,16 @@ public class MythicFind {
         }
     }
 
-    public String getMythic() {
-        if (mythicFindItem == null) {
-            MinMax minMax = getBoxMinMax();
-            return "§5" + getType().getName() + " §a- §7Lv. §f" + (minMax.getMin() - 1) + "-" + minMax.getMax();
-        } else {
-            return mythicFindItem.getDisplayName();
-        }
+    public String getMythicFindTitle() {
+        Mythic mythic = getMythic();
+        if (mythic != null)
+            return "§5" + mythic.getName();
+        return getBoxTitle();
+    }
+
+    public String getBoxTitle() {
+        MinMax minMax = getBoxMinMax();
+        return "§5" + getType().getName() + " §a- §7Lv. §f" + (minMax.getMin() - 1) + "-" + minMax.getMax();
     }
 
     public boolean isApproximately() {
