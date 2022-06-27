@@ -31,6 +31,8 @@ public class HistoryGuiMythics extends CustomGui {
         int centerWidth = 158;
         int rightWidth = 100;
         MythicFind mythicBefore = null;
+        // TODO: 27/06/2022 show detailed dry info when hovering over dry
+        // TODO: 27/06/2022 show time and place of mythic found when hovering over number
         for (MythicFind mythicFind : getMythicFindsData().getMythicFinds()) {
             ButtonText buttonText = new ButtonText(mythicFind.getMythicFindItem() == null ? "Copy from hand" : "Reset");
             String chestCountText = "§8#§3" + FormatterHelper.getFormatted(mythicFind.getChestCount());
