@@ -28,8 +28,7 @@ public class HistoryGuiMythics extends CustomGui {
         int rightWidth = 100;
         MythicFind mythicBefore = null;
         for (MythicFind mythicFind : getMythicFindsData().getMythicFinds()) {
-            ButtonText buttonText = new ButtonText("Copy from Hand");
-            // TODO: 27/06/2022 add reset
+            ButtonText buttonText = new ButtonText(mythicFind.getMythicFindItem() == null ? "Copy from hand" : "Reset");
             String chestCountText = "§8#§3" + FormatterHelper.getFormatted(mythicFind.getChestCount());
             int dryCount = mythicBefore != null && mythicBefore.isApproximately()
                     ? mythicFind.getChestCount() - mythicBefore.getChestCount()
@@ -47,11 +46,17 @@ public class HistoryGuiMythics extends CustomGui {
                     chestCountText,
                     dryCountText,
                     width / 2 - totalWidth / 2 + leftWidth + centerWidth + 6 / 2, // spacing 6
-                    100, // right width
+                    100 - 6 / 2, // right width, spacing 6
                     lineHeight,
                     buttonText::getText,
                     // TODO: 25/06/2022 add different way to set mythic if you don't have the item anymore
                     () -> {
+                        if (mythicFind.getMythicFindItem() != null) {
+                            mythicFind.setMythicFindItem(null);
+                            getMythicFindsData().save();
+                            buttonText.changeText("Copy from hand");
+                            return;
+                        }
                         ItemStack itemStack = Minecraft.getMinecraft().player.getHeldItemMainhand();
                         if (itemStack.isEmpty()) {
                             buttonText.changeText("No item", 2000);
@@ -72,7 +77,8 @@ public class HistoryGuiMythics extends CustomGui {
                         }
                         mythicFind.setMythicFindItem(itemStack);
                         getMythicFindsData().save();
-                        buttonText.changeText("Success!");
+                        buttonText.changeText("Reset");
+                        buttonText.changeText("Success!", 2000);
                     }
             ));
             mythicBefore = mythicFind;

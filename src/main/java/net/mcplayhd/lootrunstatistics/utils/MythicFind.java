@@ -38,7 +38,15 @@ public class MythicFind {
         this.emeraldsDry = emeraldsDry;
     }
 
+    public MythicFindItem getMythicFindItem() {
+        return mythicFindItem;
+    }
+
     public void setMythicFindItem(ItemStack itemStack) {
+        if (itemStack == null) {
+            mythicFindItem = null;
+            return;
+        }
         int id = net.minecraft.item.Item.getIdFromItem(itemStack.getItem());
         int damage = itemStack.getItemDamage();
         try {
