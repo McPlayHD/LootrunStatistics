@@ -54,7 +54,7 @@ public class LastMythicCommand extends CommandBase implements IClientCommand {
             sender.sendMessage(new TextComponentString("§cNo §5Mythics §cfound."));
             return;
         }
-        sender.sendMessage(new TextComponentString("§eLast §5Mythic§7: §5" + lastMythic.getMythic()));
+        sender.sendMessage(new TextComponentString("§eLast §5Mythic§7: §5" + lastMythic.getMythicFindTitle()));
         sender.sendMessage(new TextComponentString("§eIn chest §8#§3" + getFormatted(lastMythic.getChestCount()) + " §7(" + getFormattedDry(lastMythic.getDry()) + " §edry§7)"));
         Map<Tier, Integer> tiers = lastMythic.getItemsDry();
         int sum = tiers.values().stream().mapToInt(i -> i).sum();
