@@ -41,8 +41,10 @@ public class HistoryGuiMythics extends CustomGui {
                     ? mythicFind.getChestCount() - mythicBefore.getChestCount()
                     : mythicFind.getDry();
             String dryCountText = FormatterHelper.getFormattedDry(dryCount) + " §e" + "dry";
-            if ((mythicBefore != null && mythicBefore.isApproximately()) || mythicFind.isApproximately()) {
+            if (mythicFind.isApproximately()) {
                 chestCountText = "§8~" + chestCountText;
+            }
+            if ((mythicBefore != null && mythicBefore.isApproximately()) || mythicFind.isApproximately()) {
                 dryCountText = "§8~" + dryCountText;
             }
             addLine(new LineMythicFindHistoryEntry(
