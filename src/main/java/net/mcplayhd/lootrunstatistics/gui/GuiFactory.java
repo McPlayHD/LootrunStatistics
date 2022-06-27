@@ -1,6 +1,6 @@
 package net.mcplayhd.lootrunstatistics.gui;
 
-import net.mcplayhd.lootrunstatistics.gui.configuration.ConfigurationGuiMain;
+import net.mcplayhd.lootrunstatistics.gui.guis.configuration.ConfigurationGuiMain;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.fml.client.IModGuiFactory;

@@ -1,5 +1,6 @@
-package net.mcplayhd.lootrunstatistics.gui.configuration;
+package net.mcplayhd.lootrunstatistics.gui.guis.configuration;
 
+import net.mcplayhd.lootrunstatistics.LootrunStatistics;
 import net.mcplayhd.lootrunstatistics.api.WynncraftAPI;
 import net.mcplayhd.lootrunstatistics.gui.CustomGui;
 import net.mcplayhd.lootrunstatistics.gui.drawables.DrawableLineButtonRight;
@@ -19,7 +20,7 @@ import static net.mcplayhd.lootrunstatistics.LootrunStatistics.*;
 public class ConfigurationGuiMain extends CustomGui {
 
     public ConfigurationGuiMain(GuiScreen parentScreen) {
-        super(parentScreen);
+        super(parentScreen, 60, LootrunStatistics.NAME + " v" + LootrunStatistics.VERSION, "by McPlayHD");
     }
 
     @Override
