@@ -257,6 +257,7 @@ public class CustomGui extends GuiScreen {
             }
         }
         int scrollAmount = Mouse.getDWheel() / 120;
+        // TODO: 27/06/2022 shift-scroll for faster scroll
         if (scrollAmount != 0) {
             int maxLines = getMaxLines();
             if (scrollAmount < 0 && scrollPosition < lines.size() - maxLines) {
