@@ -26,16 +26,26 @@ public class HistoryGuiMythics extends CustomGui {
         int leftWidth = 162;
         int centerWidth = 158;
         int rightWidth = 100;
+        MythicFind mythicBefore = null;
         for (MythicFind mythicFind : getMythicFindsData().getMythicFinds()) {
             ButtonText buttonText = new ButtonText("Copy from Hand");
             // TODO: 27/06/2022 add reset
+            String chestCountText = "§8#§3" + FormatterHelper.getFormatted(mythicFind.getChestCount());
+            int dryCount = mythicBefore != null && mythicBefore.isApproximately()
+                    ? mythicFind.getChestCount() - mythicBefore.getChestCount()
+                    : mythicFind.getDry();
+            String dryCountText = FormatterHelper.getFormattedDry(dryCount) + " §e" + "dry";
+            if ((mythicBefore != null && mythicBefore.isApproximately()) || mythicFind.isApproximately()) {
+                chestCountText = "§8~" + chestCountText;
+                dryCountText = "§8~" + dryCountText;
+            }
             addLine(new DrawableLineTextItemTextTextTextButton(
                     ++id,
                     "#" + mythicNumber++,
                     mythicFind::getItem,
                     mythicFind::getMythic,
-                    "§8#§3" + FormatterHelper.getFormatted(mythicFind.getChestCount()),
-                    FormatterHelper.getFormattedDry(mythicFind.getDry()) + " §e" + "dry",
+                    chestCountText,
+                    dryCountText,
                     width / 2 - totalWidth / 2 + leftWidth + centerWidth + 6 / 2, // spacing 6
                     100, // right width
                     lineHeight,
@@ -65,6 +75,7 @@ public class HistoryGuiMythics extends CustomGui {
                         buttonText.changeText("Success!");
                     }
             ));
+            mythicBefore = mythicFind;
         }
         scrollToBottom();
     }

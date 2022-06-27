@@ -16,6 +16,7 @@ import java.util.Objects;
 
 public class MythicFind {
     private final String mythic;
+    private final boolean approximately;
     private final int chestCount;
     private final int dry;
     private final int x, y, z;
@@ -26,6 +27,7 @@ public class MythicFind {
 
     public MythicFind(String mythic, int chestCount, int dry, int x, int y, int z, Date time, Map<Tier, Integer> itemsDry, int emeraldsDry) {
         this.mythic = mythic;
+        approximately = false;
         this.chestCount = chestCount;
         this.dry = dry;
         this.x = x;
@@ -82,6 +84,10 @@ public class MythicFind {
         } else {
             return mythicFindItem.getDisplayName();
         }
+    }
+
+    public boolean isApproximately() {
+        return approximately;
     }
 
     public int getChestCount() {
