@@ -242,6 +242,8 @@ public class CustomGui extends GuiScreen {
         int mouseButton = Mouse.getEventButton();
         if (mouseButton != -1 && Mouse.getEventButtonState()) {
             for (DrawableLine line : lines) {
+                if (line.getId() < scrollPosition || line.getId() >= scrollPosition + getMaxLines())
+                    continue;
                 if (line instanceof DrawableLineItemTextTextAreaButton) {
                     if (line.getCenterTextField() != null) {
                         line.getCenterTextField().mouseClicked(clickX, clickY, mouseButton);
