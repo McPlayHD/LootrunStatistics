@@ -68,8 +68,8 @@ public class ChestOpenListener {
         Container openContainer = player.openContainer;
         if (!(openContainer instanceof ContainerChest)) return;
         InventoryBasic lowerInventory = (InventoryBasic) ((ContainerChest) openContainer).getLowerChestInventory();
-        String containerName = lowerInventory.getName();
-        if (containerName.contains("Loot Chest") && !containerName.contains("\u00a77\u00a7r")) {
+        String containerName = Objects.requireNonNull(TextFormatting.getTextWithoutFormattingCodes(lowerInventory.getName()));
+        if (containerName.startsWith("Loot Chest") && !containerName.contains("\u00a77\u00a7r")) {
             // this is a loot chest, and we did not yet change its name.
             getChestCountData().addChest();
             int totalChests = getChestCountData().getTotalChests();
@@ -78,9 +78,9 @@ public class ChestOpenListener {
             // "\u00a77\u00a7r" is our identifier.
             // It won't show because it just sets the color and resets it immediately.
             if (getConfiguration().displayTotalChestCountInChest()) {
-                lowerInventory.setCustomName(containerName + "\u00a77\u00a7r" + " #" + getFormatted(totalChests));
+                lowerInventory.setCustomName(lowerInventory.getName() + "\u00a77\u00a7r" + " #" + getFormatted(totalChests));
             } else {
-                lowerInventory.setCustomName(containerName + "\u00a77\u00a7r");
+                lowerInventory.setCustomName(lowerInventory.getName() + "\u00a77\u00a7r");
             }
         }
     }
@@ -94,8 +94,8 @@ public class ChestOpenListener {
             Container openContainer = player.openContainer;
             if (!(openContainer instanceof ContainerChest)) return;
             InventoryBasic lowerInventory = (InventoryBasic) ((ContainerChest) openContainer).getLowerChestInventory();
-            String containerName = lowerInventory.getName();
-            if (!containerName.contains("Loot Chest")) return;
+            String containerName = Objects.requireNonNull(TextFormatting.getTextWithoutFormattingCodes(lowerInventory.getName()));
+            if (!containerName.startsWith("Loot Chest")) return;
             if (getConfiguration().displayDryCountInChest()) {
                 // Credits to https://github.com/albarv340/chestcountmod
                 GlStateManager.pushMatrix();
@@ -193,7 +193,6 @@ public class ChestOpenListener {
             if (dryDataUpdated) {
                 getDryData().save();
             }
-            containerName = Objects.requireNonNull(TextFormatting.getTextWithoutFormattingCodes(containerName));
             containerName = containerName.substring("Loot Chest ".length());
             String[] sp = containerName.split(" ");
             String rome = sp[0];
