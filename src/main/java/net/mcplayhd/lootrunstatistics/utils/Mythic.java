@@ -4,12 +4,11 @@ import net.mcplayhd.lootrunstatistics.api.WynncraftAPI;
 import net.mcplayhd.lootrunstatistics.enums.ArmorType;
 import net.mcplayhd.lootrunstatistics.enums.ItemType;
 import net.mcplayhd.lootrunstatistics.enums.Tier;
-import net.minecraft.util.text.TextFormatting;
 
 import static net.mcplayhd.lootrunstatistics.LootrunStatistics.getChests;
 import static net.mcplayhd.lootrunstatistics.LootrunStatistics.getMythicsConfig;
 
-public class Mythic extends Item implements Comparable<Mythic> {
+public class Mythic extends Item {
     private boolean enabled = true;
     private String displayName;
 
@@ -26,16 +25,6 @@ public class Mythic extends Item implements Comparable<Mythic> {
         for (Mythic mythic : WynncraftAPI.getMythics()) {
             getMythicsConfig().load(mythic);
         }
-    }
-
-    public static Mythic getMythicByName(String name) {
-        name = TextFormatting.getTextWithoutFormattingCodes(name);
-        if (name == null)
-            return null;
-        for (Mythic mythic : WynncraftAPI.getMythics())
-            if (name.contains(mythic.getName()))
-                return mythic;
-        return null;
     }
 
     public void setEnabled(boolean enabled) {
@@ -56,12 +45,5 @@ public class Mythic extends Item implements Comparable<Mythic> {
         this.displayName = displayName;
         getMythicsConfig().save(this);
         getChests().updateAllNotes();
-    }
-
-    @Override
-    public int compareTo(Mythic other) {
-        if (getLevel() != other.getLevel())
-            return Integer.compare(getLevel(), other.getLevel());
-        return getName().compareTo(other.getName());
     }
 }

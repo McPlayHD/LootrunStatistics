@@ -1,6 +1,5 @@
-package net.mcplayhd.lootrunstatistics.gui.guis.configuration;
+package net.mcplayhd.lootrunstatistics.gui.configuration;
 
-import net.mcplayhd.lootrunstatistics.LootrunStatistics;
 import net.mcplayhd.lootrunstatistics.api.WynncraftAPI;
 import net.mcplayhd.lootrunstatistics.enums.ItemType;
 import net.mcplayhd.lootrunstatistics.gui.CustomGui;
@@ -10,14 +9,14 @@ import net.mcplayhd.lootrunstatistics.utils.Mythic;
 import net.minecraft.client.gui.GuiScreen;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
 public class ConfigurationGuiMythics extends CustomGui {
 
     public ConfigurationGuiMythics(GuiScreen parentScreen) {
-        super(parentScreen, 60, LootrunStatistics.NAME + " v" + LootrunStatistics.VERSION, "by McPlayHD");
+        super(parentScreen);
     }
 
     @Override
@@ -32,7 +31,7 @@ public class ConfigurationGuiMythics extends CustomGui {
             ArrayList<Mythic> mythics = mythicsByType.get(type);
             if (mythics == null) continue;
             addLine(new DrawableLineTextCenterSubtitle(++id, type.getName()));
-            Collections.sort(mythics);
+            mythics.sort(Comparator.comparingInt(Mythic::getLevel));
             for (Mythic mythic : mythics) {
                 addLine(new DrawableLineItemTextTextAreaButton(
                         ++id,
@@ -40,7 +39,7 @@ public class ConfigurationGuiMythics extends CustomGui {
                         mythic.getName(),
                         mythic.getDisplayName(),
                         mythic::setDisplayName,
-                        width / 2 + 100 / 2 + 6, // center size 100, spacing column 6
+                        width / 2 + 100 / 2 + 8, // center size 100, spacing column 8
                         120,
                         lineHeight,
                         () -> mythic.isEnabled() ? "Enabled" : "Ignored",
