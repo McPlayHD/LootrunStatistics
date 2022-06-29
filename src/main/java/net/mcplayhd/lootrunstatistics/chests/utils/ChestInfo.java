@@ -31,7 +31,17 @@ public class ChestInfo {
         return tier;
     }
 
+    public Map<ItemType, LevelMap> getItemInfos() {
+        if (itemInfos == null) {
+            itemInfos = new HashMap<>();
+        }
+        return itemInfos;
+    }
+
     public Map<Integer, Integer> getLevelsSeen() {
+        if (levelsSeen == null) {
+            levelsSeen = new HashMap<>();
+        }
         return levelsSeen;
     }
 
@@ -57,19 +67,19 @@ public class ChestInfo {
     }
 
     public void addNormalItem(ItemType type, int lvl) {
-        LevelMap map = itemInfos.computeIfAbsent(type, m -> new LevelMap());
+        LevelMap map = getItemInfos().computeIfAbsent(type, m -> new LevelMap());
         map.triggerNormalItemFind(lvl);
-        levelsSeen.merge(lvl, 1, Integer::sum);
+        getLevelsSeen().merge(lvl, 1, Integer::sum);
     }
 
     public void addBox(ItemType type, Tier tier, MinMax minMax) {
-        LevelMap map = itemInfos.computeIfAbsent(type, m -> new LevelMap());
+        LevelMap map = getItemInfos().computeIfAbsent(type, m -> new LevelMap());
         map.triggerBoxFind(tier, minMax);
     }
 
     public void updateChestLevel() {
         MinMax minMax = new MinMax();
-        for (int level : levelsSeen.keySet()) {
+        for (int level : getLevelsSeen().keySet()) {
             minMax.updateMin(level);
             minMax.updateMax(level);
         }
@@ -100,7 +110,7 @@ public class ChestInfo {
 
     private List<MinMax> getAllBoxRanges() {
         List<MinMax> allPossibleBoxRanges = new ArrayList<>();
-        for (Map.Entry<ItemType, LevelMap> itemTypeLevelMapEntry : itemInfos.entrySet()) {
+        for (Map.Entry<ItemType, LevelMap> itemTypeLevelMapEntry : getItemInfos().entrySet()) {
             ItemType itemType = itemTypeLevelMapEntry.getKey();
             LevelMap levelMap = itemTypeLevelMapEntry.getValue();
             for (Map.Entry<Tier, Map<String, Integer>> entry : levelMap.levelMap.entrySet()) {
