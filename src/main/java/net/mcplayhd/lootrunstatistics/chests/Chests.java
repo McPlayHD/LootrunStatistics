@@ -6,6 +6,7 @@ import net.mcplayhd.lootrunstatistics.LootrunStatistics;
 import net.mcplayhd.lootrunstatistics.chests.utils.ChestInfo;
 import net.mcplayhd.lootrunstatistics.chests.utils.MinMax;
 import net.mcplayhd.lootrunstatistics.enums.ItemType;
+import net.mcplayhd.lootrunstatistics.enums.PotionType;
 import net.mcplayhd.lootrunstatistics.enums.Tier;
 import net.mcplayhd.lootrunstatistics.helpers.FileHelper;
 import net.mcplayhd.lootrunstatistics.utils.Loc;
@@ -53,6 +54,10 @@ public class Chests {
 
     public void addBox(Loc loc, ItemType type, Tier tier, MinMax minMax) {
         getChestInfo(loc).addBox(type, tier, minMax);
+    }
+
+    public void addPotion(Loc loc, PotionType potionType, int level) {
+        getChestInfo(loc).addPotion(potionType, level);
     }
 
     public void updateChestInfo(Loc loc) {
