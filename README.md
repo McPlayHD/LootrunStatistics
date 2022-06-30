@@ -16,6 +16,8 @@ In order for all features to work, you have to install [Wynntils](https://wynnti
 
 **Not compatible with the Acivia chestcountmod!**
 
+**I also never managed to make it register chest contents with WIM2 so better not use it.**
+
 ## TODO
 
 - [ ] store actual mythic found in mythic history
