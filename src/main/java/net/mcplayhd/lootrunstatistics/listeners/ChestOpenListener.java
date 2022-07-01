@@ -3,8 +3,10 @@ package net.mcplayhd.lootrunstatistics.listeners;
 import net.mcplayhd.lootrunstatistics.chests.utils.MinMax;
 import net.mcplayhd.lootrunstatistics.enums.ItemType;
 import net.mcplayhd.lootrunstatistics.enums.PotionType;
+import net.mcplayhd.lootrunstatistics.enums.PowderType;
 import net.mcplayhd.lootrunstatistics.enums.Tier;
 import net.mcplayhd.lootrunstatistics.helpers.DrawStringHelper;
+import net.mcplayhd.lootrunstatistics.helpers.FormatterHelper;
 import net.mcplayhd.lootrunstatistics.utils.Loc;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.state.IBlockState;
@@ -195,8 +197,24 @@ public class ChestOpenListener {
                         if (displayName.equals("Emerald")) {
                             getDryData().addEmeralds(itemStack.getCount());
                             dryDataUpdated = true;
+                        } else if (displayName.contains("Earth Powder")
+                                || displayName.contains("Thunder Powder")
+                                || displayName.contains("Fire Powder")
+                                || displayName.contains("Water Powder")
+                                || displayName.contains("Air Powder")) {
+                            displayName = displayName.replace("✤ ", "");
+                            displayName = displayName.replace("✦ ", "");
+                            displayName = displayName.replace("❉ ", "");
+                            displayName = displayName.replace("✹ ", "");
+                            displayName = displayName.replace("❋ ", "");
+                            String[] displayNameSp = displayName.split(" ");
+                            PowderType powderType = PowderType.valueOf(displayNameSp[0].toUpperCase());
+                            String roman = displayNameSp[displayNameSp.length - 1];
+                            int tier = FormatterHelper.convertRomanToArabic(roman);
+                            // TODO: 30/06/2022 store powder
+                            getLogger().info("Found " + powderType + " powder tier [" + tier + "]");
                         } else {
-                            // TODO: 29/06/2022 other items
+                            // TODO: 29/06/2022 ingredients, pouches
                             getLogger().info("Saved nothing for '" + itemStack.getDisplayName() + "'(" + itemStack.getCount() + ") in slot " + slot);
                         }
                     }
@@ -209,22 +227,8 @@ public class ChestOpenListener {
             }
             containerName = containerName.substring("Loot Chest ".length());
             String[] sp = containerName.split(" ");
-            String rome = sp[0];
-            int tier = 0;
-            switch (rome) {
-                case "I":
-                    tier = 1;
-                    break;
-                case "II":
-                    tier = 2;
-                    break;
-                case "III":
-                    tier = 3;
-                    break;
-                case "IV":
-                    tier = 4;
-                    break;
-            }
+            String roman = sp[0];
+            int tier = FormatterHelper.convertRomanToArabic(roman);
             chestsDatabaseUpdated = chestsDatabaseUpdated || getChests().setTier(loc, tier);
             if (chestsDatabaseUpdated) {
                 getChests().save();
