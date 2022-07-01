@@ -187,7 +187,8 @@ public class ChestOpenListener {
                             getLogger().info("Saved nothing for '" + itemStack.getDisplayName() + "'(" + itemStack.getCount() + ") in slot " + slot);
                         }
                     }
-                } catch (Exception ignored) {
+                } catch (Exception ex) {
+                    getLogger().warn("Caught exception '" + ex.getMessage() + "' for slot " + slot);
                 }
             }
             if (dryDataUpdated) {
