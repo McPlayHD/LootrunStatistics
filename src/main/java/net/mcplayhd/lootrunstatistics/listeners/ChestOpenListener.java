@@ -2,6 +2,7 @@ package net.mcplayhd.lootrunstatistics.listeners;
 
 import net.mcplayhd.lootrunstatistics.chests.utils.MinMax;
 import net.mcplayhd.lootrunstatistics.enums.ItemType;
+import net.mcplayhd.lootrunstatistics.enums.PotionType;
 import net.mcplayhd.lootrunstatistics.enums.Tier;
 import net.mcplayhd.lootrunstatistics.helpers.DrawStringHelper;
 import net.mcplayhd.lootrunstatistics.utils.Loc;
@@ -171,12 +172,20 @@ public class ChestOpenListener {
                                         .split("\n")[1]
                         );
                         String displayName = Objects.requireNonNull(TextFormatting.getTextWithoutFormattingCodes(itemStack.getDisplayName()));
-                        displayName = displayName.replace("Chain Mail", "Chestplate");
-                        String[] displayNameSp = displayName.split(" ");
-                        ItemType type = ItemType.valueOf(displayNameSp[displayNameSp.length - 1].toUpperCase());
-                        getDryData().addItemDry(Tier.NORMAL);
-                        dryDataUpdated = true;
-                        getChests().addNormalItem(loc, type, lvl);
+                        if (displayName.startsWith("Potion of ")) {
+                            // TODO: 29/06/2022 xp pots
+                            // TODO: 29/06/2022 other potions
+                            String potionTypeSt = displayName.substring("Potion of ".length()).split(" ")[0];
+                            PotionType potionType = PotionType.valueOf(potionTypeSt.toUpperCase());
+                            getChests().addPotion(loc, potionType, lvl);
+                        } else {
+                            displayName = displayName.replace("Chain Mail", "Chestplate");
+                            String[] displayNameSp = displayName.split(" ");
+                            ItemType type = ItemType.valueOf(displayNameSp[displayNameSp.length - 1].toUpperCase());
+                            getDryData().addItemDry(Tier.NORMAL);
+                            dryDataUpdated = true;
+                            getChests().addNormalItem(loc, type, lvl);
+                        }
                         chestsDatabaseUpdated = true;
                     } else {
                         String displayName = Objects.requireNonNull(TextFormatting.getTextWithoutFormattingCodes(itemStack.getDisplayName()));
@@ -184,6 +193,7 @@ public class ChestOpenListener {
                             getDryData().addEmeralds(itemStack.getCount());
                             dryDataUpdated = true;
                         } else {
+                            // TODO: 29/06/2022 other items
                             getLogger().info("Saved nothing for '" + itemStack.getDisplayName() + "'(" + itemStack.getCount() + ") in slot " + slot);
                         }
                     }

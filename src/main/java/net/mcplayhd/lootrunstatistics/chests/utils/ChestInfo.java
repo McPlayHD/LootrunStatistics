@@ -2,6 +2,7 @@ package net.mcplayhd.lootrunstatistics.chests.utils;
 
 import net.mcplayhd.lootrunstatistics.api.WynncraftAPI;
 import net.mcplayhd.lootrunstatistics.enums.ItemType;
+import net.mcplayhd.lootrunstatistics.enums.PotionType;
 import net.mcplayhd.lootrunstatistics.enums.Tier;
 import net.mcplayhd.lootrunstatistics.utils.Item;
 import net.mcplayhd.lootrunstatistics.utils.Loc;
@@ -15,6 +16,7 @@ public class ChestInfo {
     protected int tier;
     protected Map<ItemType, LevelMap> itemInfos = new HashMap<>();
     protected Map<Integer, Integer> levelsSeen = new HashMap<>();
+    protected Map<PotionType, Map<Integer, Integer>> potions = new HashMap<>();
 
     private transient MinMax minMax;
     private transient NoteDrawer noteDrawer;
@@ -43,6 +45,13 @@ public class ChestInfo {
             levelsSeen = new HashMap<>();
         }
         return levelsSeen;
+    }
+
+    public Map<PotionType, Map<Integer, Integer>> getPotions() {
+        if (potions == null) {
+            potions = new HashMap<>();
+        }
+        return potions;
     }
 
     public MinMax getMinMax() {
@@ -77,6 +86,12 @@ public class ChestInfo {
         map.triggerBoxFind(tier, minMax);
     }
 
+    public void addPotion(PotionType potionType, int level) {
+        Map<Integer, Integer> levelMap = getPotions().computeIfAbsent(potionType, m -> new HashMap<>());
+        levelMap.merge(level, 1, Integer::sum);
+    }
+
+    // TODO: 29/06/2022 check if we can somehow also use potions for level decision making
     public void updateChestLevel() {
         MinMax minMax = new MinMax();
         for (int level : getLevelsSeen().keySet()) {
