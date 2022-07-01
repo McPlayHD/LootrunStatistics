@@ -5,6 +5,7 @@ import net.mcplayhd.lootrunstatistics.enums.ItemType;
 import net.mcplayhd.lootrunstatistics.enums.PotionType;
 import net.mcplayhd.lootrunstatistics.enums.Tier;
 import net.mcplayhd.lootrunstatistics.helpers.DrawStringHelper;
+import net.mcplayhd.lootrunstatistics.helpers.FormatterHelper;
 import net.mcplayhd.lootrunstatistics.utils.Loc;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.state.IBlockState;
@@ -209,22 +210,8 @@ public class ChestOpenListener {
             }
             containerName = containerName.substring("Loot Chest ".length());
             String[] sp = containerName.split(" ");
-            String rome = sp[0];
-            int tier = 0;
-            switch (rome) {
-                case "I":
-                    tier = 1;
-                    break;
-                case "II":
-                    tier = 2;
-                    break;
-                case "III":
-                    tier = 3;
-                    break;
-                case "IV":
-                    tier = 4;
-                    break;
-            }
+            String roman = sp[0];
+            int tier = FormatterHelper.convertRomanToArabic(roman);
             chestsDatabaseUpdated = chestsDatabaseUpdated || getChests().setTier(loc, tier);
             if (chestsDatabaseUpdated) {
                 getChests().save();
