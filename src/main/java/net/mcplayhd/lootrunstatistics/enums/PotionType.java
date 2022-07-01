@@ -2,5 +2,10 @@ package net.mcplayhd.lootrunstatistics.enums;
 
 public enum PotionType {
     HEALING,
-    MANA
+    MANA,
+    STRENGTH,
+    DEXTERITY,
+    INTELLIGENCE,
+    DEFENCE,
+    AGILITY
 }

@@ -173,8 +173,11 @@ public class ChestOpenListener {
                         );
                         String displayName = Objects.requireNonNull(TextFormatting.getTextWithoutFormattingCodes(itemStack.getDisplayName()));
                         if (displayName.startsWith("Potion of ")) {
-                            // TODO: 29/06/2022 xp pots
-                            // TODO: 29/06/2022 other potions
+                            displayName = displayName.replace("✤ ", "");
+                            displayName = displayName.replace("✦ ", "");
+                            displayName = displayName.replace("❉ ", "");
+                            displayName = displayName.replace("✹ ", "");
+                            displayName = displayName.replace("❋ ", "");
                             String potionTypeSt = displayName.substring("Potion of ".length()).split(" ")[0];
                             PotionType potionType = PotionType.valueOf(potionTypeSt.toUpperCase());
                             getChests().addPotion(loc, potionType, lvl);
