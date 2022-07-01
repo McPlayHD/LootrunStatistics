@@ -2,6 +2,7 @@ package net.mcplayhd.lootrunstatistics.chests.utils;
 
 import net.mcplayhd.lootrunstatistics.api.WynncraftAPI;
 import net.mcplayhd.lootrunstatistics.enums.ItemType;
+import net.mcplayhd.lootrunstatistics.enums.PotionType;
 import net.mcplayhd.lootrunstatistics.enums.Tier;
 import net.mcplayhd.lootrunstatistics.utils.Item;
 import net.mcplayhd.lootrunstatistics.utils.Loc;
@@ -15,6 +16,7 @@ public class ChestInfo {
     protected int tier;
     protected Map<ItemType, LevelMap> itemInfos = new HashMap<>();
     protected Map<Integer, Integer> levelsSeen = new HashMap<>();
+    protected Map<PotionType, Map<Integer, Integer>> potions = new HashMap<>();
 
     private transient MinMax minMax;
     private transient NoteDrawer noteDrawer;
@@ -31,8 +33,25 @@ public class ChestInfo {
         return tier;
     }
 
+    public Map<ItemType, LevelMap> getItemInfos() {
+        if (itemInfos == null) {
+            itemInfos = new HashMap<>();
+        }
+        return itemInfos;
+    }
+
     public Map<Integer, Integer> getLevelsSeen() {
+        if (levelsSeen == null) {
+            levelsSeen = new HashMap<>();
+        }
         return levelsSeen;
+    }
+
+    public Map<PotionType, Map<Integer, Integer>> getPotions() {
+        if (potions == null) {
+            potions = new HashMap<>();
+        }
+        return potions;
     }
 
     public MinMax getMinMax() {
@@ -57,19 +76,25 @@ public class ChestInfo {
     }
 
     public void addNormalItem(ItemType type, int lvl) {
-        LevelMap map = itemInfos.computeIfAbsent(type, m -> new LevelMap());
+        LevelMap map = getItemInfos().computeIfAbsent(type, m -> new LevelMap());
         map.triggerNormalItemFind(lvl);
-        levelsSeen.merge(lvl, 1, Integer::sum);
+        getLevelsSeen().merge(lvl, 1, Integer::sum);
     }
 
     public void addBox(ItemType type, Tier tier, MinMax minMax) {
-        LevelMap map = itemInfos.computeIfAbsent(type, m -> new LevelMap());
+        LevelMap map = getItemInfos().computeIfAbsent(type, m -> new LevelMap());
         map.triggerBoxFind(tier, minMax);
     }
 
+    public void addPotion(PotionType potionType, int level) {
+        Map<Integer, Integer> levelMap = getPotions().computeIfAbsent(potionType, m -> new HashMap<>());
+        levelMap.merge(level, 1, Integer::sum);
+    }
+
+    // TODO: 29/06/2022 check if we can somehow also use potions for level decision making
     public void updateChestLevel() {
         MinMax minMax = new MinMax();
-        for (int level : levelsSeen.keySet()) {
+        for (int level : getLevelsSeen().keySet()) {
             minMax.updateMin(level);
             minMax.updateMax(level);
         }
@@ -100,7 +125,7 @@ public class ChestInfo {
 
     private List<MinMax> getAllBoxRanges() {
         List<MinMax> allPossibleBoxRanges = new ArrayList<>();
-        for (Map.Entry<ItemType, LevelMap> itemTypeLevelMapEntry : itemInfos.entrySet()) {
+        for (Map.Entry<ItemType, LevelMap> itemTypeLevelMapEntry : getItemInfos().entrySet()) {
             ItemType itemType = itemTypeLevelMapEntry.getKey();
             LevelMap levelMap = itemTypeLevelMapEntry.getValue();
             for (Map.Entry<Tier, Map<String, Integer>> entry : levelMap.levelMap.entrySet()) {

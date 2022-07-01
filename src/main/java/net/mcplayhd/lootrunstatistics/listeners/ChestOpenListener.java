@@ -2,8 +2,11 @@ package net.mcplayhd.lootrunstatistics.listeners;
 
 import net.mcplayhd.lootrunstatistics.chests.utils.MinMax;
 import net.mcplayhd.lootrunstatistics.enums.ItemType;
+import net.mcplayhd.lootrunstatistics.enums.PotionType;
+import net.mcplayhd.lootrunstatistics.enums.PowderType;
 import net.mcplayhd.lootrunstatistics.enums.Tier;
 import net.mcplayhd.lootrunstatistics.helpers.DrawStringHelper;
+import net.mcplayhd.lootrunstatistics.helpers.FormatterHelper;
 import net.mcplayhd.lootrunstatistics.utils.Loc;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.state.IBlockState;
@@ -68,8 +71,8 @@ public class ChestOpenListener {
         Container openContainer = player.openContainer;
         if (!(openContainer instanceof ContainerChest)) return;
         InventoryBasic lowerInventory = (InventoryBasic) ((ContainerChest) openContainer).getLowerChestInventory();
-        String containerName = lowerInventory.getName();
-        if (containerName.contains("Loot Chest") && !containerName.contains("\u00a77\u00a7r")) {
+        String containerName = Objects.requireNonNull(TextFormatting.getTextWithoutFormattingCodes(lowerInventory.getName()));
+        if (containerName.startsWith("Loot Chest") && !containerName.contains("\u00a77\u00a7r")) {
             // this is a loot chest, and we did not yet change its name.
             getChestCountData().addChest();
             int totalChests = getChestCountData().getTotalChests();
@@ -78,9 +81,9 @@ public class ChestOpenListener {
             // "\u00a77\u00a7r" is our identifier.
             // It won't show because it just sets the color and resets it immediately.
             if (getConfiguration().displayTotalChestCountInChest()) {
-                lowerInventory.setCustomName(containerName + "\u00a77\u00a7r" + " #" + getFormatted(totalChests));
+                lowerInventory.setCustomName(lowerInventory.getName() + "\u00a77\u00a7r" + " #" + getFormatted(totalChests));
             } else {
-                lowerInventory.setCustomName(containerName + "\u00a77\u00a7r");
+                lowerInventory.setCustomName(lowerInventory.getName() + "\u00a77\u00a7r");
             }
         }
     }
@@ -94,8 +97,8 @@ public class ChestOpenListener {
             Container openContainer = player.openContainer;
             if (!(openContainer instanceof ContainerChest)) return;
             InventoryBasic lowerInventory = (InventoryBasic) ((ContainerChest) openContainer).getLowerChestInventory();
-            String containerName = lowerInventory.getName();
-            if (!containerName.contains("Loot Chest")) return;
+            String containerName = Objects.requireNonNull(TextFormatting.getTextWithoutFormattingCodes(lowerInventory.getName()));
+            if (!containerName.startsWith("Loot Chest")) return;
             if (getConfiguration().displayDryCountInChest()) {
                 // Credits to https://github.com/albarv340/chestcountmod
                 GlStateManager.pushMatrix();
@@ -171,47 +174,61 @@ public class ChestOpenListener {
                                         .split("\n")[1]
                         );
                         String displayName = Objects.requireNonNull(TextFormatting.getTextWithoutFormattingCodes(itemStack.getDisplayName()));
-                        displayName = displayName.replace("Chain Mail", "Chestplate");
-                        String[] displayNameSp = displayName.split(" ");
-                        ItemType type = ItemType.valueOf(displayNameSp[displayNameSp.length - 1].toUpperCase());
-                        getDryData().addItemDry(Tier.NORMAL);
-                        dryDataUpdated = true;
-                        getChests().addNormalItem(loc, type, lvl);
+                        if (displayName.startsWith("Potion of ")) {
+                            displayName = displayName.replace("✤ ", "");
+                            displayName = displayName.replace("✦ ", "");
+                            displayName = displayName.replace("❉ ", "");
+                            displayName = displayName.replace("✹ ", "");
+                            displayName = displayName.replace("❋ ", "");
+                            String potionTypeSt = displayName.substring("Potion of ".length()).split(" ")[0];
+                            PotionType potionType = PotionType.valueOf(potionTypeSt.toUpperCase());
+                            getChests().addPotion(loc, potionType, lvl);
+                        } else {
+                            displayName = displayName.replace("Chain Mail", "Chestplate");
+                            String[] displayNameSp = displayName.split(" ");
+                            ItemType type = ItemType.valueOf(displayNameSp[displayNameSp.length - 1].toUpperCase());
+                            getDryData().addItemDry(Tier.NORMAL);
+                            dryDataUpdated = true;
+                            getChests().addNormalItem(loc, type, lvl);
+                        }
                         chestsDatabaseUpdated = true;
                     } else {
                         String displayName = Objects.requireNonNull(TextFormatting.getTextWithoutFormattingCodes(itemStack.getDisplayName()));
                         if (displayName.equals("Emerald")) {
                             getDryData().addEmeralds(itemStack.getCount());
                             dryDataUpdated = true;
+                        } else if (displayName.contains("Earth Powder")
+                                || displayName.contains("Thunder Powder")
+                                || displayName.contains("Fire Powder")
+                                || displayName.contains("Water Powder")
+                                || displayName.contains("Air Powder")) {
+                            displayName = displayName.replace("✤ ", "");
+                            displayName = displayName.replace("✦ ", "");
+                            displayName = displayName.replace("❉ ", "");
+                            displayName = displayName.replace("✹ ", "");
+                            displayName = displayName.replace("❋ ", "");
+                            String[] displayNameSp = displayName.split(" ");
+                            PowderType powderType = PowderType.valueOf(displayNameSp[0].toUpperCase());
+                            String roman = displayNameSp[displayNameSp.length - 1];
+                            int tier = FormatterHelper.convertRomanToArabic(roman);
+                            // TODO: 30/06/2022 store powder
+                            getLogger().info("Found " + powderType + " powder tier [" + tier + "]");
                         } else {
+                            // TODO: 29/06/2022 ingredients, pouches
                             getLogger().info("Saved nothing for '" + itemStack.getDisplayName() + "'(" + itemStack.getCount() + ") in slot " + slot);
                         }
                     }
-                } catch (Exception ignored) {
+                } catch (Exception ex) {
+                    getLogger().warn("Caught exception '" + ex.getMessage() + "' for slot " + slot);
                 }
             }
             if (dryDataUpdated) {
                 getDryData().save();
             }
-            containerName = Objects.requireNonNull(TextFormatting.getTextWithoutFormattingCodes(containerName));
             containerName = containerName.substring("Loot Chest ".length());
             String[] sp = containerName.split(" ");
-            String rome = sp[0];
-            int tier = 0;
-            switch (rome) {
-                case "I":
-                    tier = 1;
-                    break;
-                case "II":
-                    tier = 2;
-                    break;
-                case "III":
-                    tier = 3;
-                    break;
-                case "IV":
-                    tier = 4;
-                    break;
-            }
+            String roman = sp[0];
+            int tier = FormatterHelper.convertRomanToArabic(roman);
             chestsDatabaseUpdated = chestsDatabaseUpdated || getChests().setTier(loc, tier);
             if (chestsDatabaseUpdated) {
                 getChests().save();
