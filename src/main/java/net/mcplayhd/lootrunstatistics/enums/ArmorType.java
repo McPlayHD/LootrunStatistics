@@ -7,8 +7,7 @@ public enum ArmorType {
     GOLDEN("golden"),
     CHAIN("chainmail"),
     IRON("iron"),
-    DIAMOND("diamond"),
-    ;
+    DIAMOND("diamond");
 
     private final String registryName;
 
