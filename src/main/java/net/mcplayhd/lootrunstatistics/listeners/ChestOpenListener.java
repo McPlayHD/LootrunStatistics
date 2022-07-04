@@ -195,6 +195,7 @@ public class ChestOpenListener {
                     } else {
                         String displayName = Objects.requireNonNull(TextFormatting.getTextWithoutFormattingCodes(itemStack.getDisplayName()));
                         if (displayName.equals("Emerald")) {
+                            // TODO: 01/07/2022 maybe also store emeralds in chest
                             getDryData().addEmeralds(itemStack.getCount());
                             dryDataUpdated = true;
                         } else if (displayName.contains("Earth Powder")
