@@ -105,7 +105,6 @@ public class MythicFind {
 
     public ItemStack getItem() {
         if (mythicFindItem == null) { // return a box
-            // TODO: 25/06/2022 add lore
             return ItemStackHelper.generateWynncraftItem(Items.STONE_SHOVEL, 6);
         } else {
             try {
