@@ -72,7 +72,7 @@ public class ChestOpenListener {
         if (!(openContainer instanceof ContainerChest)) return;
         InventoryBasic lowerInventory = (InventoryBasic) ((ContainerChest) openContainer).getLowerChestInventory();
         String containerName = Objects.requireNonNull(TextFormatting.getTextWithoutFormattingCodes(lowerInventory.getName()));
-        if (containerName.startsWith("Loot Chest") && !containerName.contains("\u00a77\u00a7r")) {
+        if (containerName.startsWith("Loot Chest") && !containerName.contains("\u00a77\u00a7r") && !chestConsidered) {
             // this is a loot chest, and we did not yet change its name.
             getChestCountData().addChest();
             int totalChests = getChestCountData().getTotalChests();
