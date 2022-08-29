@@ -175,12 +175,8 @@ public class ChestOpenListener {
                         );
                         String displayName = Objects.requireNonNull(TextFormatting.getTextWithoutFormattingCodes(itemStack.getDisplayName()));
                         if (displayName.startsWith("Potion of ")) {
-                            displayName = displayName.replace("✤ ", "");
-                            displayName = displayName.replace("✦ ", "");
-                            displayName = displayName.replace("❉ ", "");
-                            displayName = displayName.replace("✹ ", "");
-                            displayName = displayName.replace("❋ ", "");
-                            String potionTypeSt = displayName.substring("Potion of ".length()).split(" ")[0];
+                            String[] displayNameSp = displayName.substring("Potion of ".length()).split(" ");
+                            String potionTypeSt = displayNameSp[displayNameSp.length - 2];
                             PotionType potionType = PotionType.valueOf(potionTypeSt.toUpperCase());
                             getChests().addPotion(loc, potionType, lvl);
                         } else {
@@ -203,13 +199,8 @@ public class ChestOpenListener {
                                 || displayName.contains("Fire Powder")
                                 || displayName.contains("Water Powder")
                                 || displayName.contains("Air Powder")) {
-                            displayName = displayName.replace("✤ ", "");
-                            displayName = displayName.replace("✦ ", "");
-                            displayName = displayName.replace("❉ ", "");
-                            displayName = displayName.replace("✹ ", "");
-                            displayName = displayName.replace("❋ ", "");
                             String[] displayNameSp = displayName.split(" ");
-                            PowderType powderType = PowderType.valueOf(displayNameSp[0].toUpperCase());
+                            PowderType powderType = PowderType.valueOf(displayNameSp[1].toUpperCase());
                             String roman = displayNameSp[displayNameSp.length - 1];
                             int tier = FormatterHelper.convertRomanToArabic(roman);
                             // TODO: 30/06/2022 store powder
