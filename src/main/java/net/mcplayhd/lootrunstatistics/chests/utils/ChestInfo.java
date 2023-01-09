@@ -3,6 +3,7 @@ package net.mcplayhd.lootrunstatistics.chests.utils;
 import net.mcplayhd.lootrunstatistics.api.WynncraftAPI;
 import net.mcplayhd.lootrunstatistics.enums.ItemType;
 import net.mcplayhd.lootrunstatistics.enums.PotionType;
+import net.mcplayhd.lootrunstatistics.enums.PowderType;
 import net.mcplayhd.lootrunstatistics.enums.Tier;
 import net.mcplayhd.lootrunstatistics.utils.Item;
 import net.mcplayhd.lootrunstatistics.utils.Loc;
@@ -17,6 +18,12 @@ public class ChestInfo {
     protected Map<ItemType, LevelMap> itemInfos = new HashMap<>();
     protected Map<Integer, Integer> levelsSeen = new HashMap<>();
     protected Map<PotionType, Map<Integer, Integer>> potions = new HashMap<>();
+    protected Map<PowderType, Map<Integer, Integer>> powders = new HashMap<>();
+    protected Map<String, Integer> ingredients = new HashMap<>(); // formatted as 'name:tier:level'
+    protected Map<Integer, Integer> pouches = new HashMap<>();
+    protected Date lastOpened;
+    protected long openCount;
+    protected long emeralds;
 
     private transient MinMax minMax;
     private transient NoteDrawer noteDrawer;
@@ -54,6 +61,27 @@ public class ChestInfo {
         return potions;
     }
 
+    public Map<PowderType, Map<Integer, Integer>> getPowders() {
+        if (powders == null) {
+            powders = new HashMap<>();
+        }
+        return powders;
+    }
+
+    public Map<String, Integer> getIngredients() {
+        if (ingredients == null) {
+            ingredients = new HashMap<>();
+        }
+        return ingredients;
+    }
+
+    public Map<Integer, Integer> getPouches() {
+        if (pouches == null) {
+            pouches = new HashMap<>();
+        }
+        return pouches;
+    }
+
     public MinMax getMinMax() {
         if (minMax == null) {
             updateChestLevel();
@@ -68,11 +96,13 @@ public class ChestInfo {
         return noteDrawer;
     }
 
-    public boolean setTier(int tier) {
-        if (this.tier == tier)
-            return false;
+    public void registerOpened() {
+        lastOpened = new Date();
+        openCount++;
+    }
+
+    public void setTier(int tier) {
         this.tier = tier;
-        return true;
     }
 
     public void addNormalItem(ItemType type, int lvl) {
@@ -89,6 +119,24 @@ public class ChestInfo {
     public void addPotion(PotionType potionType, int level) {
         Map<Integer, Integer> levelMap = getPotions().computeIfAbsent(potionType, m -> new HashMap<>());
         levelMap.merge(level, 1, Integer::sum);
+    }
+
+    public void addPowder(PowderType powderType, int tier) {
+        Map<Integer, Integer> levelMap = getPowders().computeIfAbsent(powderType, m -> new HashMap<>());
+        levelMap.merge(tier, 1, Integer::sum);
+    }
+
+    public void addIngredient(String name, int tier, int level) {
+        String key = name + ":" + tier + ":" + level;
+        getIngredients().merge(key, 1, Integer::sum);
+    }
+
+    public void addPouch(int tier) {
+        getPouches().merge(tier, 1, Integer::sum);
+    }
+
+    public void addEmeralds(int emeralds) {
+        this.emeralds += emeralds;
     }
 
     // TODO: 29/06/2022 check if we can somehow also use potions for level decision making

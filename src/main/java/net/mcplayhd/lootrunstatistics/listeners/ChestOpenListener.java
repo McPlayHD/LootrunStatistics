@@ -126,14 +126,15 @@ public class ChestOpenListener {
             }
             // we know that all items are loaded into the chest at the exact same time so that's why we can proceed here.
             Loc loc = getLastChestLocation();
+            getChests().registerOpened(loc);
             chestConsidered = true;
             boolean dryDataUpdated = false;
-            boolean chestsDatabaseUpdated = false;
             for (int slot = 0; slot < lowerInventory.getSizeInventory(); slot++) {
                 try { // I intentionally cause exceptions because it's more convenient to develop
                     ItemStack itemStack = lowerInventory.getStackInSlot(slot);
-                    if (itemStack.getDisplayName().equals("Air"))
+                    if (itemStack.getDisplayName().equals("Air")) {
                         continue;
+                    }
                     List<String> lore = itemStack.getTooltip(player, ITooltipFlag.TooltipFlags.ADVANCED);
                     Optional<String> itemType = lore.stream()
                             .filter(line -> Objects.requireNonNull(TextFormatting.getTextWithoutFormattingCodes(line)).contains("Type: ")).findFirst();
@@ -166,7 +167,6 @@ public class ChestOpenListener {
                             getMythicFindsData().addMythic(mythicString, loc);
                         }
                         getChests().addBox(loc, type, tier, minMax);
-                        chestsDatabaseUpdated = true;
                     } else if (combatLvMin.isPresent()) {
                         int lvl = Integer.parseInt(
                                 Objects.requireNonNull(TextFormatting.getTextWithoutFormattingCodes(combatLvMin.get()))
@@ -175,9 +175,15 @@ public class ChestOpenListener {
                         );
                         String displayName = Objects.requireNonNull(TextFormatting.getTextWithoutFormattingCodes(itemStack.getDisplayName()));
                         if (displayName.startsWith("Potion of ")) {
-                            String[] displayNameSp = displayName.substring("Potion of ".length()).split(" ");
-                            String potionTypeSt = displayNameSp[displayNameSp.length - 2];
-                            PotionType potionType = PotionType.valueOf(potionTypeSt.toUpperCase());
+                            PotionType potionType;
+                            if (displayName.startsWith("Potion of Wisdom")) {
+                                potionType = PotionType.WISDOM;
+                            } else {
+                                // all other potions have [x/X] behind, so we can parse it by reading the second last string
+                                String[] displayNameSp = displayName.substring("Potion of ".length()).split(" ");
+                                String potionTypeSt = displayNameSp[displayNameSp.length - 2];
+                                potionType = PotionType.valueOf(potionTypeSt.toUpperCase());
+                            }
                             getChests().addPotion(loc, potionType, lvl);
                         } else {
                             displayName = displayName.replace("Chain Mail", "Chestplate");
@@ -187,12 +193,12 @@ public class ChestOpenListener {
                             dryDataUpdated = true;
                             getChests().addNormalItem(loc, type, lvl);
                         }
-                        chestsDatabaseUpdated = true;
                     } else {
                         String displayName = Objects.requireNonNull(TextFormatting.getTextWithoutFormattingCodes(itemStack.getDisplayName()));
                         if (displayName.equals("Emerald")) {
-                            // TODO: 01/07/2022 maybe also store emeralds in chest
-                            getDryData().addEmeralds(itemStack.getCount());
+                            int emeralds = itemStack.getCount();
+                            getChests().addEmeralds(loc, emeralds);
+                            getDryData().addEmeralds(emeralds);
                             dryDataUpdated = true;
                         } else if (displayName.contains("Earth Powder")
                                 || displayName.contains("Thunder Powder")
@@ -203,10 +209,35 @@ public class ChestOpenListener {
                             PowderType powderType = PowderType.valueOf(displayNameSp[1].toUpperCase());
                             String roman = displayNameSp[displayNameSp.length - 1];
                             int tier = FormatterHelper.convertRomanToArabic(roman);
-                            // TODO: 30/06/2022 store powder
-                            getLogger().info("Found " + powderType + " powder tier [" + tier + "]");
+                            getChests().addPowder(loc, powderType, tier);
+                        } else if (displayName.contains("Emerald Pouch")) {
+                            String roman = displayName.replace("Emerald Pouch [Tier ", "").replace("]", "");
+                            int tier = FormatterHelper.convertRomanToArabic(roman);
+                            getChests().addPouch(loc, tier);
+                        } else if (displayName.contains("✫✫✫")) {
+                            String name = displayName.replace(" [", "\n").split("\n")[0];
+                            // 'Toxic Lumps [§8✫✫✫§7]'
+                            // 'Sylphid Tears [§e✫§8✫✫§6]'
+                            // 'Soulbound Cinders [§d✫✫§8✫§5]'
+                            // 'Glacial Anomaly [§b✫✫✫§3]'
+                            String displayNameRaw = itemStack.getDisplayName();
+                            int tier = displayNameRaw.contains("[§8✫✫✫§7]") ? 0
+                                    : displayNameRaw.contains("[§e✫§8✫✫§6]") ? 1
+                                    : displayNameRaw.contains("[§d✫✫§8✫§5]") ? 2
+                                    : displayNameRaw.contains("[§b✫✫✫§3]") ? 3
+                                    : -1; // should never happen but whatever
+                            Optional<String> craftingLvMin = lore.stream()
+                                    .filter(line -> Objects.requireNonNull(TextFormatting.getTextWithoutFormattingCodes(line)).contains("Crafting Lv. Min: ")).findFirst();
+                            int level = -1;
+                            if (craftingLvMin.isPresent()) {
+                                level = Integer.parseInt(
+                                        Objects.requireNonNull(TextFormatting.getTextWithoutFormattingCodes(craftingLvMin.get()))
+                                                .replace("Crafting Lv. Min: ", "\n")
+                                                .split("\n")[1]
+                                );
+                            }
+                            getChests().addIngredient(loc, name, tier, level);
                         } else {
-                            // TODO: 29/06/2022 ingredients, pouches
                             getLogger().info("Saved nothing for '" + itemStack.getDisplayName() + "'(" + itemStack.getCount() + ") in slot " + slot);
                         }
                     }
@@ -221,11 +252,9 @@ public class ChestOpenListener {
             String[] sp = containerName.split(" ");
             String roman = sp[0];
             int tier = FormatterHelper.convertRomanToArabic(roman);
-            chestsDatabaseUpdated = chestsDatabaseUpdated || getChests().setTier(loc, tier);
-            if (chestsDatabaseUpdated) {
-                getChests().save();
-                getChests().updateChestInfo(loc);
-            }
+            getChests().setTier(loc, tier);
+            getChests().save();
+            getChests().updateChestInfo(loc);
         } catch (Throwable throwable) {
             throwable.printStackTrace();
         }
