@@ -37,6 +37,8 @@ import static net.mcplayhd.lootrunstatistics.helpers.FormatterHelper.getFormatte
 public class ChestOpenListener {
     private BlockPos chestLocation = null;
     private boolean chestConsidered = false;
+    private int foundItemsUntilSlot = -1;
+    private long lastItemArrived = -1;
     private int dryThisChest = 0;
 
     private Loc getLastChestLocation() {
@@ -55,8 +57,12 @@ public class ChestOpenListener {
         BlockPos pos = e.getPos();
         IBlockState state = e.getEntityPlayer().world.getBlockState(pos);
         if (!(state.getBlock() instanceof BlockContainer)) return;
-        chestLocation = pos.toImmutable();
+        // reset state
         chestConsidered = false;
+        foundItemsUntilSlot = -1;
+        lastItemArrived = -1;
+        // storing the chest location
+        chestLocation = pos.toImmutable();
         getLogger().info("Clicked chest at " + chestLocation.getX() + "," + chestLocation.getY() + "," + chestLocation.getZ() + ".");
     }
 
@@ -117,24 +123,45 @@ public class ChestOpenListener {
                 // we only want to look at each chest once.
                 return;
             }
-            boolean itemFound = false;
-            for (int slot = 0; slot < lowerInventory.getSizeInventory(); slot++) {
+            int newFoundItemsUntilSlot = foundItemsUntilSlot;
+            for (int slot = foundItemsUntilSlot + 1; slot < lowerInventory.getSizeInventory(); slot++) {
                 ItemStack itemStack = lowerInventory.getStackInSlot(slot);
-                if (itemStack.getDisplayName().equals("Air"))
+                if (itemStack.getDisplayName().equals("Air")) {
                     continue;
-                itemFound = true;
-                break;
+                }
+                newFoundItemsUntilSlot = slot;
             }
-            if (!itemFound) {
-                // No items found so far...
+            if (newFoundItemsUntilSlot == foundItemsUntilSlot) {
+                // no (new) items found...
+                if (lastItemArrived != -1) {
+                    // we already found items before
+                    if (System.currentTimeMillis() > lastItemArrived + 250) {
+                        // we didn't get any new items for 250ms so let's consider this chest finished
+                        // because otherwise if the player manually adds an item to the chest it would count it
+                        chestConsidered = true;
+                    }
+                }
                 return;
             }
-            // we know that all items are loaded into the chest at the exact same time so that's why we can proceed here.
+            // new items were added so let's actually add them to the chest
             Loc loc = getLastChestLocation();
-            getChests().registerOpened(loc);
-            chestConsidered = true;
+            lastItemArrived = System.currentTimeMillis();
+            if (foundItemsUntilSlot == -1) {
+                // this is the first time we saw an item in this chest
+                getChests().registerOpened(loc);
+                containerName = containerName.substring("Loot Chest ".length());
+                String[] sp = containerName.split(" ");
+                String roman = sp[0];
+                int tier = FormatterHelper.convertRomanToArabic(roman);
+                getChests().setTier(loc, tier);
+            }
             boolean dryDataUpdated = false;
-            for (int slot = 0; slot < lowerInventory.getSizeInventory(); slot++) {
+            // we can now check every slot up until the slot we found the last item in
+            getLogger().info("Checking from slot " + (foundItemsUntilSlot + 1) + " up to and including slot " + (newFoundItemsUntilSlot));
+            if (foundItemsUntilSlot != -1) {
+                player.sendMessage(new TextComponentString("§7[§3LootrunStatistics§7] §eInfo§7: §7Found new items in slots §7(§e" + (foundItemsUntilSlot + 1) + " §7 - §e" + newFoundItemsUntilSlot + "§7)"));
+            }
+            for (int slot = foundItemsUntilSlot + 1; slot <= newFoundItemsUntilSlot; slot++) {
                 try { // I intentionally cause exceptions because it's more convenient to develop
                     ItemStack itemStack = lowerInventory.getStackInSlot(slot);
                     if (itemStack.getDisplayName().equals("Air")) {
@@ -252,14 +279,13 @@ public class ChestOpenListener {
                     getLogger().warn("Caught exception '" + throwable.getMessage() + "' for slot " + slot);
                 }
             }
+            // updating the biggest slot where an item was found
+            foundItemsUntilSlot = newFoundItemsUntilSlot;
+            // saving dry data if something changed
             if (dryDataUpdated) {
                 getDryData().save();
             }
-            containerName = containerName.substring("Loot Chest ".length());
-            String[] sp = containerName.split(" ");
-            String roman = sp[0];
-            int tier = FormatterHelper.convertRomanToArabic(roman);
-            getChests().setTier(loc, tier);
+            // chest data is updated no matter what
             getChests().save();
             getChests().updateChestInfo(loc);
         } catch (Throwable throwable) {
