@@ -20,6 +20,7 @@ import static net.mcplayhd.lootrunstatistics.LootrunStatistics.MODID;
 public class Chests {
     private static final File file = new File(MODID + "/chests.json");
     private static final Gson gson = new GsonBuilder()
+            .setDateFormat("yyyy-MM-dd HH:mm:ss.SSS")
             .setPrettyPrinting()
             .create();
 
