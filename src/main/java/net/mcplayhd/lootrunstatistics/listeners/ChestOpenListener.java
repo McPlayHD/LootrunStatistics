@@ -66,26 +66,30 @@ public class ChestOpenListener {
      */
     @SubscribeEvent
     public void onGuiOpen(GuiScreenEvent.InitGuiEvent event) {
-        if (event.getGui() == null) return;
-        EntityPlayerSP player = getPlayer();
-        if (player == null) return;
-        Container openContainer = player.openContainer;
-        if (!(openContainer instanceof ContainerChest)) return;
-        InventoryBasic lowerInventory = (InventoryBasic) ((ContainerChest) openContainer).getLowerChestInventory();
-        String containerName = Objects.requireNonNull(TextFormatting.getTextWithoutFormattingCodes(lowerInventory.getName()));
-        if (containerName.startsWith("Loot Chest") && !containerName.contains("\u00a77\u00a7r") && !chestConsidered) {
-            // this is a loot chest, and we did not yet change its name.
-            getChestCountData().addChest();
-            int totalChests = getChestCountData().getTotalChests();
-            getDryData().addChestDry();
-            dryThisChest = getDryData().getChestsDry();
-            // "\u00a77\u00a7r" is our identifier.
-            // It won't show because it just sets the color and resets it immediately.
-            if (getConfiguration().displayTotalChestCountInChest()) {
-                lowerInventory.setCustomName(lowerInventory.getName() + "\u00a77\u00a7r" + " #" + getFormatted(totalChests));
-            } else {
-                lowerInventory.setCustomName(lowerInventory.getName() + "\u00a77\u00a7r");
+        try { // don't want to crash
+            if (event.getGui() == null) return;
+            EntityPlayerSP player = getPlayer();
+            if (player == null) return;
+            Container openContainer = player.openContainer;
+            if (!(openContainer instanceof ContainerChest)) return;
+            InventoryBasic lowerInventory = (InventoryBasic) ((ContainerChest) openContainer).getLowerChestInventory();
+            String containerName = Objects.requireNonNull(TextFormatting.getTextWithoutFormattingCodes(lowerInventory.getName()));
+            if (containerName.startsWith("Loot Chest") && !containerName.contains("\u00a77\u00a7r") && !chestConsidered) {
+                // this is a loot chest, and we did not yet change its name.
+                getChestCountData().addChest();
+                int totalChests = getChestCountData().getTotalChests();
+                getDryData().addChestDry();
+                dryThisChest = getDryData().getChestsDry();
+                // "\u00a77\u00a7r" is our identifier.
+                // It won't show because it just sets the color and resets it immediately.
+                if (getConfiguration().displayTotalChestCountInChest()) {
+                    lowerInventory.setCustomName(lowerInventory.getName() + "\u00a77\u00a7r" + " #" + getFormatted(totalChests));
+                } else {
+                    lowerInventory.setCustomName(lowerInventory.getName() + "\u00a77\u00a7r");
+                }
             }
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
         }
     }
 
