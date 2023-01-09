@@ -129,7 +129,6 @@ public class ChestOpenListener {
             getChests().registerOpened(loc);
             chestConsidered = true;
             boolean dryDataUpdated = false;
-            boolean chestsDatabaseUpdated = false;
             for (int slot = 0; slot < lowerInventory.getSizeInventory(); slot++) {
                 try { // I intentionally cause exceptions because it's more convenient to develop
                     ItemStack itemStack = lowerInventory.getStackInSlot(slot);
@@ -176,9 +175,15 @@ public class ChestOpenListener {
                         );
                         String displayName = Objects.requireNonNull(TextFormatting.getTextWithoutFormattingCodes(itemStack.getDisplayName()));
                         if (displayName.startsWith("Potion of ")) {
-                            String[] displayNameSp = displayName.substring("Potion of ".length()).split(" ");
-                            String potionTypeSt = displayNameSp[displayNameSp.length - 2];
-                            PotionType potionType = PotionType.valueOf(potionTypeSt.toUpperCase());
+                            PotionType potionType;
+                            if (displayName.startsWith("Potion of Wisdom")) {
+                                potionType = PotionType.WISDOM;
+                            } else {
+                                // all other potions have [x/X] behind, so we can parse it by reading the second last string
+                                String[] displayNameSp = displayName.substring("Potion of ".length()).split(" ");
+                                String potionTypeSt = displayNameSp[displayNameSp.length - 2];
+                                potionType = PotionType.valueOf(potionTypeSt.toUpperCase());
+                            }
                             getChests().addPotion(loc, potionType, lvl);
                         } else {
                             displayName = displayName.replace("Chain Mail", "Chestplate");
