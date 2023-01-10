@@ -5,7 +5,6 @@ import net.mcplayhd.lootrunstatistics.utils.MythicFind;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.client.IClientCommand;
 
 import javax.annotation.Nonnull;
@@ -14,8 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import static net.mcplayhd.lootrunstatistics.LootrunStatistics.getMythicFindsData;
-import static net.mcplayhd.lootrunstatistics.helpers.FormatterHelper.getFormatted;
-import static net.mcplayhd.lootrunstatistics.helpers.FormatterHelper.getFormattedDry;
+import static net.mcplayhd.lootrunstatistics.helpers.FormatterHelper.*;
 
 public class LastMythicCommand extends CommandBase implements IClientCommand {
 
@@ -51,20 +49,20 @@ public class LastMythicCommand extends CommandBase implements IClientCommand {
     public void execute(@Nonnull MinecraftServer server, @Nonnull ICommandSender sender, @Nonnull String[] args) {
         MythicFind lastMythic = getMythicFindsData().getLastMythic();
         if (lastMythic == null) {
-            sender.sendMessage(new TextComponentString("§cNo §5Mythics §cfound."));
+            sender.sendMessage(formatString("§cNo §5Mythics §cfound."));
             return;
         }
-        sender.sendMessage(new TextComponentString("§eLast §5Mythic§7: §5" + lastMythic.getMythicFindTitle()));
-        sender.sendMessage(new TextComponentString("§eIn chest §8#§3" + getFormatted(lastMythic.getChestCount()) + " §7(" + getFormattedDry(lastMythic.getDry()) + " §edry§7)"));
+        sender.sendMessage(formatString("§eLast §5Mythic§7: §5" + lastMythic.getMythic()));
+        sender.sendMessage(formatString("§eIn chest §8#§3" + getFormatted(lastMythic.getChestCount()) + " §7(§" + getFormattedDry(lastMythic.getDry()) + " §edry§7)"));
         Map<Tier, Integer> tiers = lastMythic.getItemsDry();
         int sum = tiers.values().stream().mapToInt(i -> i).sum();
-        sender.sendMessage(new TextComponentString("§eAfter items§7: §e" + getFormatted(sum)));
+        sender.sendMessage(formatString("§eAfter items§7: §e" + getFormatted(sum)));
         for (Map.Entry<Tier, Integer> tierDry : tiers.entrySet()) {
             Tier tier = tierDry.getKey();
             if (tier == Tier.MYTHIC)
                 continue; // will never be seen there
             int dry = tierDry.getValue();
-            sender.sendMessage(new TextComponentString("§7  " + tier.getDisplayName() + "§7: §e" + getFormatted(dry)));
+            sender.sendMessage(formatString("§7  " + tier.getDisplayName() + "§7: §e" + getFormatted(dry)));
         }
     }
 }

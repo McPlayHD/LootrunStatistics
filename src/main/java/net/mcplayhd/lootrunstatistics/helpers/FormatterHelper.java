@@ -1,5 +1,7 @@
 package net.mcplayhd.lootrunstatistics.helpers;
 
+import net.minecraft.util.text.TextComponentString;
+
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
@@ -8,6 +10,10 @@ import java.util.Locale;
 import static net.mcplayhd.lootrunstatistics.LootrunStatistics.getConfiguration;
 
 public class FormatterHelper {
+
+    public static TextComponentString formatString(String string) {
+        return new TextComponentString(string.replace("§", "\u00a7"));
+    }
 
     public static String getFormatted(int number) {
         Character groupingSeparator = getConfiguration().getGroupingSeparator().getSeparator();

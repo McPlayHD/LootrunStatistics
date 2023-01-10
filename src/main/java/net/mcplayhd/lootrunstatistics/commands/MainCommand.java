@@ -1,6 +1,9 @@
 package net.mcplayhd.lootrunstatistics.commands;
 
 import com.google.common.collect.ImmutableList;
+import net.mcplayhd.lootrunstatistics.chests.utils.ChestInfo;
+import net.mcplayhd.lootrunstatistics.chests.utils.LevelMap;
+import net.mcplayhd.lootrunstatistics.enums.Tier;
 import net.mcplayhd.lootrunstatistics.gui.CustomGui;
 import net.mcplayhd.lootrunstatistics.gui.GuiFactory;
 import net.mcplayhd.lootrunstatistics.gui.guis.configuration.ConfigurationGuiMain;
@@ -14,9 +17,15 @@ import net.minecraftforge.client.IClientCommand;
 
 import javax.annotation.Nonnull;
 import java.io.File;
+import java.text.DecimalFormat;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import static net.mcplayhd.lootrunstatistics.LootrunStatistics.getChests;
 import static net.mcplayhd.lootrunstatistics.LootrunStatistics.getLogger;
+import static net.mcplayhd.lootrunstatistics.helpers.FormatterHelper.formatString;
+import static net.mcplayhd.lootrunstatistics.helpers.FormatterHelper.getFormatted;
 
 public class MainCommand extends CommandBase implements IClientCommand {
 
@@ -68,6 +77,29 @@ public class MainCommand extends CommandBase implements IClientCommand {
         }
         if (args.length > 0 && args[0].equalsIgnoreCase("history")) {
             CustomGui.shouldBeDrawn = new HistoryGuiMythics(null);
+            return;
+        }
+        if (args.length > 0 && args[0].equalsIgnoreCase("rarities")) {
+            int total = 0;
+            Map<Tier, Integer> allItems = new HashMap<>();
+            for (ChestInfo chestInfo : getChests().getAllChests()) {
+                for (LevelMap levelMap : chestInfo.getItemInfos().values()) {
+                    for (Tier tier : Tier.values()) {
+                        for (Integer amount : levelMap.getLevelMap(tier).values()) {
+                            allItems.merge(tier, amount, Integer::sum);
+                            total += amount;
+                        }
+                    }
+                }
+            }
+            sender.sendMessage(formatString("§eTotal items found§7: §a" + getFormatted(total)));
+            sender.sendMessage(formatString("§3Distribution§7:"));
+            for (Tier tier : Tier.values()) {
+                int amount = allItems.getOrDefault(tier, 0);
+                double percentage = amount / (double) total * 100;
+                DecimalFormat decimalFormat = new DecimalFormat("#0.0");
+                sender.sendMessage(formatString("§7  " + tier.getDisplayName() + "§7: §e" + getFormatted(amount) + " §7(§e" + decimalFormat.format(percentage) + "%§7)"));
+            }
             return;
         }
         // I can't open the gui immediately because the chat close event will also update the currentScreen.

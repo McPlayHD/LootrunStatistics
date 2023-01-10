@@ -13,6 +13,7 @@ import net.mcplayhd.lootrunstatistics.helpers.FileHelper;
 import net.mcplayhd.lootrunstatistics.utils.Loc;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.HashMap;
 
 import static net.mcplayhd.lootrunstatistics.LootrunStatistics.MODID;
@@ -27,6 +28,10 @@ public class Chests {
     protected HashMap<String, ChestInfo> chestInfos = new HashMap<>();
 
     public static Chests load() {
+        return load(file);
+    }
+
+    public static Chests load(File file) {
         try {
             return gson.fromJson(FileHelper.readFile(file), Chests.class);
         } catch (Exception ignored) {
@@ -38,12 +43,38 @@ public class Chests {
         return chestInfos.computeIfAbsent(loc.toString(), ci -> new ChestInfo(loc));
     }
 
+    public Collection<ChestInfo> getAllChests() {
+        return chestInfos.values();
+    }
+
     public void save() {
         try {
             FileHelper.writeFile(file, gson.toJson(this));
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    public void backup() {
+        File backupFile = new File(file.getPath() + ".backup");
+        if (backupFile.exists()) {
+            backupFile.delete();
+        }
+        file.renameTo(backupFile);
+    }
+
+    public boolean restoreFromBackup() {
+        File backupFile = new File(file.getPath() + ".backup");
+        if (!backupFile.exists()) {
+            return false;
+        }
+        Chests backup = load(backupFile);
+        chestInfos = backup.chestInfos;
+        return true;
+    }
+
+    public void reset() {
+        chestInfos.clear();
     }
 
     public void registerOpened(Loc loc) {

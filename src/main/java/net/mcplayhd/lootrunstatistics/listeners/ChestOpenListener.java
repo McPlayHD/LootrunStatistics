@@ -19,7 +19,6 @@ import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.InventoryBasic;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -32,6 +31,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import static net.mcplayhd.lootrunstatistics.LootrunStatistics.*;
+import static net.mcplayhd.lootrunstatistics.helpers.FormatterHelper.formatString;
 import static net.mcplayhd.lootrunstatistics.helpers.FormatterHelper.getFormatted;
 
 public class ChestOpenListener {
@@ -267,12 +267,12 @@ public class ChestOpenListener {
                             }
                             getChests().addIngredient(loc, name, tier, level);
                         } else {
-                            player.sendMessage(new TextComponentString("§7[§3LootrunStatistics§7] §6Warning§7: §eSaved nothing for §7'" + itemStack.getDisplayName() + "§7'§8(§e" + itemStack.getCount() + "§8) §ein slot " + slot));
+                            player.sendMessage(formatString("§7[§3LootrunStatistics§7] §6Warning§7: §eSaved nothing for §7'" + itemStack.getDisplayName() + "§7'§8(§e" + itemStack.getCount() + "§8) §ein slot " + slot));
                             getLogger().warn("Saved nothing for '" + itemStack.getDisplayName() + "'(" + itemStack.getCount() + ") in slot " + slot);
                         }
                     }
                 } catch (Throwable throwable) {
-                    player.sendMessage(new TextComponentString("§7[§3LootrunStatistics§7] §6Warning§7: §eCaught exception §7'§e" + throwable.getMessage() + "§7' §efor slot " + slot));
+                    player.sendMessage(formatString("§7[§3LootrunStatistics§7] §6Warning§7: §eCaught exception §7'§e" + throwable.getMessage() + "§7' §efor slot " + slot));
                     getLogger().warn("Caught exception '" + throwable.getMessage() + "' for slot " + slot);
                 }
             }
