@@ -11,7 +11,6 @@ import net.mcplayhd.lootrunstatistics.helpers.VersionHelper;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.client.IClientCommand;
 
 import javax.annotation.Nonnull;
@@ -23,6 +22,7 @@ import java.util.Map;
 
 import static net.mcplayhd.lootrunstatistics.LootrunStatistics.getChests;
 import static net.mcplayhd.lootrunstatistics.LootrunStatistics.getLogger;
+import static net.mcplayhd.lootrunstatistics.helpers.FormatterHelper.formatString;
 import static net.mcplayhd.lootrunstatistics.helpers.FormatterHelper.getFormatted;
 
 public class MainCommand extends CommandBase implements IClientCommand {
@@ -81,13 +81,13 @@ public class MainCommand extends CommandBase implements IClientCommand {
                     }
                 }
             }
-            sender.sendMessage(new TextComponentString("§eTotal items found§7: §a" + getFormatted(total)));
-            sender.sendMessage(new TextComponentString("§3Distribution§7:"));
+            sender.sendMessage(formatString("§eTotal items found§7: §a" + getFormatted(total)));
+            sender.sendMessage(formatString("§3Distribution§7:"));
             for (Tier tier : Tier.values()) {
                 int amount = allItems.getOrDefault(tier, 0);
                 double percentage = amount / (double) total * 100;
                 DecimalFormat decimalFormat = new DecimalFormat("#0.0");
-                sender.sendMessage(new TextComponentString("§7  " + tier.getDisplayName() + "§7: §e" + getFormatted(amount) + " §7(§e" + decimalFormat.format(percentage) + "%§7)"));
+                sender.sendMessage(formatString("§7  " + tier.getDisplayName() + "§7: §e" + getFormatted(amount) + " §7(§e" + decimalFormat.format(percentage) + "%§7)"));
             }
             return;
         }
