@@ -96,7 +96,7 @@ public class MainCommand extends CommandBase implements IClientCommand {
             sender.sendMessage(formatString("§3Distribution§7:"));
             for (Tier tier : Tier.values()) {
                 int amount = allItems.getOrDefault(tier, 0);
-                double percentage = amount / (double) total * 100;
+                double percentage = total == 0 ? 0 : amount / (double) total * 100;
                 DecimalFormat decimalFormat = new DecimalFormat("#0.0");
                 sender.sendMessage(formatString("§7  " + tier.getDisplayName() + "§7: §e" + getFormatted(amount) + " §7(§e" + decimalFormat.format(percentage) + "%§7)"));
             }
