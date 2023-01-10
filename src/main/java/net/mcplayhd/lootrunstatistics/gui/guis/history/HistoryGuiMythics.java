@@ -1,6 +1,8 @@
 package net.mcplayhd.lootrunstatistics.gui.guis.history;
 
+import net.mcplayhd.lootrunstatistics.enums.Tier;
 import net.mcplayhd.lootrunstatistics.gui.CustomGui;
+import net.mcplayhd.lootrunstatistics.gui.drawables.LineMythicFindHistoryColumnNames;
 import net.mcplayhd.lootrunstatistics.gui.drawables.LineMythicFindHistoryEntry;
 import net.mcplayhd.lootrunstatistics.gui.utils.ButtonText;
 import net.mcplayhd.lootrunstatistics.helpers.FormatterHelper;
@@ -11,10 +13,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.item.ItemStack;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static net.mcplayhd.lootrunstatistics.LootrunStatistics.getMythicFindsData;
+import static net.mcplayhd.lootrunstatistics.helpers.FormatterHelper.getFormatted;
 
 public class HistoryGuiMythics extends CustomGui {
 
@@ -31,12 +36,14 @@ public class HistoryGuiMythics extends CustomGui {
         int centerWidth = 158;
         int rightWidth = 100;
         MythicFind mythicBefore = null;
-        // TODO: 27/06/2022 add top line with column info
-        // TODO: 27/06/2022 show detailed dry info when hovering over dry
-        // TODO: 27/06/2022 show time and place of mythic found when hovering over number
+        addLine(new LineMythicFindHistoryColumnNames(++id,
+                "Mythic",
+                "Chest count",
+                "Chests dry"
+        ));
         for (MythicFind mythicFind : getMythicFindsData().getMythicFinds()) {
             ButtonText buttonText = new ButtonText(mythicFind.getMythicFindItem() == null ? "Copy from hand" : "Reset");
-            String chestCountText = "§8#§3" + FormatterHelper.getFormatted(mythicFind.getChestCount());
+            String chestCountText = "§8#§3" + getFormatted(mythicFind.getChestCount());
             int dryCount = mythicBefore != null && mythicBefore.isApproximately()
                     ? mythicFind.getChestCount() - mythicBefore.getChestCount()
                     : mythicFind.getDry();
@@ -59,6 +66,12 @@ public class HistoryGuiMythics extends CustomGui {
                     },
                     () -> {
                         List<String> lore = new ArrayList<>();
+                        lore.add("§3Date§7: §e" + (mythicFind.getTime() == null ? "§cUnknown" : mythicFind.getTime().toString()));
+                        lore.add("§3Location§7: §e" + mythicFind.getX() + "§7,§e" + mythicFind.getY() + "§7,§e" + mythicFind.getZ());
+                        return lore;
+                    },
+                    () -> {
+                        List<String> lore = new ArrayList<>();
                         if (mythicFind.getMythicFindItem() != null) {
                             ItemStack itemStack = mythicFind.getItem();
                             lore.add(itemStack.getDisplayName());
@@ -73,6 +86,24 @@ public class HistoryGuiMythics extends CustomGui {
                             }
                             lore.add("§7 ");
                             lore.add("§eClick to toggle.");
+                        }
+                        return lore;
+                    },
+                    () -> {
+                        int emeraldsDry = mythicFind.getEmeraldsDry();
+                        Map<Tier, Integer> tiers = mythicFind.getItemsDry();
+                        List<String> lore = new ArrayList<>();
+                        lore.add("§aEmeralds §edry§7: §a" + getFormatted(emeraldsDry));
+                        int sum = tiers.values().stream().mapToInt(i -> i).sum();
+                        lore.add("§eItems dry§7: §e" + getFormatted(sum));
+                        DecimalFormat decimalFormat = new DecimalFormat("#0.0");
+                        for (Map.Entry<Tier, Integer> tierDry : tiers.entrySet()) {
+                            Tier tier = tierDry.getKey();
+                            if (tier == Tier.MYTHIC)
+                                continue; // will never be seen there
+                            int dry = tierDry.getValue();
+                            double percentage = sum == 0 ? 0 : dry / (double) sum * 100;
+                            lore.add("§7  " + tier.getDisplayName() + "§7: §e" + getFormatted(dry) + " §7(§e" + decimalFormat.format(percentage) + "%§7)");
                         }
                         return lore;
                     },

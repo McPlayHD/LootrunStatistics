@@ -13,7 +13,9 @@ public class LineMythicFindHistoryEntry extends DrawableLine {
     private final String textLeftLeft;
     private final ItemStackHandler itemHandlerLeftCenterRight;
     private final Runnable onItemStackClicked;
+    private final LoreHandler mythicFindInfoLoreHandler;
     private final LoreHandler itemStackLoreHandler;
+    private final LoreHandler dryInfoLoreHandler;
     private final TextHandler textLeftRight;
     private final String textCenterLeft;
     private final String textCenterRight;
@@ -25,7 +27,9 @@ public class LineMythicFindHistoryEntry extends DrawableLine {
                                       String textLeftLeft,
                                       ItemStackHandler itemHandlerLeftCenterRight,
                                       Runnable onItemStackClicked,
+                                      LoreHandler mythicFindInfoLoreHandler,
                                       LoreHandler itemStackLoreHandler,
+                                      LoreHandler dryInfoLoreHandler,
                                       TextHandler textLeftRight,
                                       String textCenterLeft,
                                       String textCenterRight,
@@ -38,7 +42,9 @@ public class LineMythicFindHistoryEntry extends DrawableLine {
         this.textLeftLeft = textLeftLeft;
         this.itemHandlerLeftCenterRight = itemHandlerLeftCenterRight;
         this.onItemStackClicked = onItemStackClicked;
+        this.mythicFindInfoLoreHandler = mythicFindInfoLoreHandler;
         this.itemStackLoreHandler = itemStackLoreHandler;
+        this.dryInfoLoreHandler = dryInfoLoreHandler;
         this.textLeftRight = textLeftRight;
         this.textCenterLeft = textCenterLeft;
         this.textCenterRight = textCenterRight;
@@ -60,8 +66,16 @@ public class LineMythicFindHistoryEntry extends DrawableLine {
         onItemStackClicked.run();
     }
 
+    public List<String> getMythicFindInfoLore() {
+        return mythicFindInfoLoreHandler.getLore();
+    }
+
     public List<String> getItemStackLore() {
         return itemStackLoreHandler.getLore();
+    }
+
+    public List<String> getDryInfoLore() {
+        return dryInfoLoreHandler.getLore();
     }
 
     public String getTextLeftRight() {

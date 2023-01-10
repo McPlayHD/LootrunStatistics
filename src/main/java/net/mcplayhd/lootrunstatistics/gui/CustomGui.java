@@ -160,6 +160,10 @@ public class CustomGui extends GuiScreen {
                 int rightWidth = 100;
                 LineMythicFindHistoryEntry line1 = (LineMythicFindHistoryEntry) line;
                 this.drawString(fontRenderer, line1.getTextLeftLeft(), width / 2 - totalWidth / 2, y + (lineHeight - 8) / 2, new Color(255, 255, 255).getRGB());
+                int textWidth1 = fontRenderer.getStringWidth(line1.getTextLeftLeft());
+                if (isHovered(mouseX, mouseY, width / 2 - totalWidth / 2, y + (lineHeight - 8) / 2, textWidth1, 10)) {
+                    hoveringText.addAll(line1.getMythicFindInfoLore());
+                }
                 this.drawItemStack(line1.getItemLeftCenterRight(), width / 2 - totalWidth / 2 + 18 + columnSpace, y + 1, false, "", false);
                 if (isHovered(mouseX, mouseY, width / 2 - totalWidth / 2 + 18 + columnSpace, y + 1, 16, 16)) {
                     hoveringText.addAll(line1.getItemStackLore());
@@ -167,6 +171,10 @@ public class CustomGui extends GuiScreen {
                 this.drawString(fontRenderer, line1.getTextLeftRight(), width / 2 - totalWidth / 2 + 18 + 16 + 2 * columnSpace, y + (lineHeight - 8) / 2, new Color(255, 255, 255).getRGB());
                 this.drawString(fontRenderer, line1.getTextCenterLeft(), width / 2 - totalWidth / 2 + leftWidth, y + (lineHeight - 8) / 2, new Color(255, 255, 255).getRGB());
                 this.drawString(fontRenderer, line1.getTextCenterRight(), width / 2 - totalWidth / 2 + leftWidth + 80 + columnSpace / 2, y + (lineHeight - 8) / 2, new Color(255, 255, 255).getRGB());
+                int textWidth2 = fontRenderer.getStringWidth(line1.getTextCenterRight());
+                if (isHovered(mouseX, mouseY, width / 2 - totalWidth / 2 + leftWidth + 80 + columnSpace / 2, y + (lineHeight - 8) / 2, textWidth2, 10)) {
+                    hoveringText.addAll(line1.getDryInfoLore());
+                }
                 line.getRightButton().displayString = line1.getRightButtonText();
             }
         }
