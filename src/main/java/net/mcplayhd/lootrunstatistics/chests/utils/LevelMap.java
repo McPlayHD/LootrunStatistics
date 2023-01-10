@@ -8,7 +8,7 @@ import java.util.Map;
 public class LevelMap {
     protected Map<Tier, Map<String, Integer>> levelMap = new HashMap<>();
 
-    private Map<String, Integer> getLevelMap(Tier tier) {
+    public Map<String, Integer> getLevelMap(Tier tier) {
         return levelMap.computeIfAbsent(tier, m -> new HashMap<>());
     }
 

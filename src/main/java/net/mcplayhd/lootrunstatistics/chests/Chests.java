@@ -13,6 +13,7 @@ import net.mcplayhd.lootrunstatistics.helpers.FileHelper;
 import net.mcplayhd.lootrunstatistics.utils.Loc;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.HashMap;
 
 import static net.mcplayhd.lootrunstatistics.LootrunStatistics.MODID;
@@ -40,6 +41,10 @@ public class Chests {
 
     public ChestInfo getChestInfo(Loc loc) {
         return chestInfos.computeIfAbsent(loc.toString(), ci -> new ChestInfo(loc));
+    }
+
+    public Collection<ChestInfo> getAllChests() {
+        return chestInfos.values();
     }
 
     public void save() {
