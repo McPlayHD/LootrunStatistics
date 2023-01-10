@@ -6,6 +6,8 @@ import net.mcplayhd.lootrunstatistics.chests.utils.LevelMap;
 import net.mcplayhd.lootrunstatistics.enums.Tier;
 import net.mcplayhd.lootrunstatistics.gui.CustomGui;
 import net.mcplayhd.lootrunstatistics.gui.GuiFactory;
+import net.mcplayhd.lootrunstatistics.gui.guis.configuration.ConfigurationGuiMain;
+import net.mcplayhd.lootrunstatistics.gui.guis.history.HistoryGuiMythics;
 import net.mcplayhd.lootrunstatistics.helpers.DesktopHelper;
 import net.mcplayhd.lootrunstatistics.helpers.VersionHelper;
 import net.minecraft.command.CommandBase;
@@ -57,6 +59,7 @@ public class MainCommand extends CommandBase implements IClientCommand {
 
     @Override
     public void execute(@Nonnull MinecraftServer server, @Nonnull ICommandSender sender, @Nonnull String[] args) {
+        // TODO: 26/06/2022 reload (all .json files)
         if (args.length > 0 && args[0].equalsIgnoreCase("update")) {
             try {
                 String version = VersionHelper.getOnlineVersion();
@@ -66,6 +69,14 @@ public class MainCommand extends CommandBase implements IClientCommand {
             } catch (Exception ex) {
                 getLogger().error("Couldn't fetch current version");
             }
+            return;
+        }
+        if (args.length > 0 && (args[0].equalsIgnoreCase("settings") || args[0].equalsIgnoreCase("config"))) {
+            CustomGui.shouldBeDrawn = new ConfigurationGuiMain(null);
+            return;
+        }
+        if (args.length > 0 && args[0].equalsIgnoreCase("history")) {
+            CustomGui.shouldBeDrawn = new HistoryGuiMythics(null);
             return;
         }
         if (args.length > 0 && args[0].equalsIgnoreCase("rarities")) {
@@ -83,10 +94,10 @@ public class MainCommand extends CommandBase implements IClientCommand {
             }
             sender.sendMessage(formatString("§eTotal items found§7: §a" + getFormatted(total)));
             sender.sendMessage(formatString("§3Distribution§7:"));
+            DecimalFormat decimalFormat = new DecimalFormat("#0.0");
             for (Tier tier : Tier.values()) {
                 int amount = allItems.getOrDefault(tier, 0);
-                double percentage = amount / (double) total * 100;
-                DecimalFormat decimalFormat = new DecimalFormat("#0.0");
+                double percentage = total == 0 ? 0 : amount / (double) total * 100;
                 sender.sendMessage(formatString("§7  " + tier.getDisplayName() + "§7: §e" + getFormatted(amount) + " §7(§e" + decimalFormat.format(percentage) + "%§7)"));
             }
             return;

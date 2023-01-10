@@ -7,6 +7,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.client.IClientCommand;
 
 import javax.annotation.Nonnull;
+import java.text.DecimalFormat;
 import java.util.Map;
 
 import static net.mcplayhd.lootrunstatistics.LootrunStatistics.getChestCountData;
@@ -43,12 +44,14 @@ public class DryCommand extends CommandBase implements IClientCommand {
         Map<Tier, Integer> tiers = getDryData().getItemsDry();
         int sum = tiers.values().stream().mapToInt(i -> i).sum();
         sender.sendMessage(formatString("§eItems dry§7: §e" + getFormatted(sum)));
+        DecimalFormat decimalFormat = new DecimalFormat("#0.0");
         for (Map.Entry<Tier, Integer> tierDry : tiers.entrySet()) {
             Tier tier = tierDry.getKey();
             if (tier == Tier.MYTHIC)
                 continue; // will never be seen there
             int dry = tierDry.getValue();
-            sender.sendMessage(formatString("§7  " + tier.getDisplayName() + "§7: §e" + getFormatted(dry)));
+            double percentage = sum == 0 ? 0 : dry / (double) sum * 100;
+            sender.sendMessage(formatString("§7  " + tier.getDisplayName() + "§7: §e" + getFormatted(dry) + " §7(§e" + decimalFormat.format(percentage) + "%§7)"));
         }
         int dry = getDryData().getChestsDry();
         int total = getChestCountData().getTotalChests();
