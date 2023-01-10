@@ -158,9 +158,6 @@ public class ChestOpenListener {
             boolean dryDataUpdated = false;
             // we can now check every slot up until the slot we found the last item in
             getLogger().info("Checking from slot " + (foundItemsUntilSlot + 1) + " up to and including slot " + (newFoundItemsUntilSlot));
-            if (foundItemsUntilSlot != -1) {
-                player.sendMessage(new TextComponentString("§7[§3LootrunStatistics§7] §eInfo§7: §7Found new items in slots §7(§e" + (foundItemsUntilSlot + 1) + " §7 - §e" + newFoundItemsUntilSlot + "§7)"));
-            }
             for (int slot = foundItemsUntilSlot + 1; slot <= newFoundItemsUntilSlot; slot++) {
                 try { // I intentionally cause exceptions because it's more convenient to develop
                     ItemStack itemStack = lowerInventory.getStackInSlot(slot);
