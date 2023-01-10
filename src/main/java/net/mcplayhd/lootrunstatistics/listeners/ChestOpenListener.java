@@ -31,11 +31,14 @@ import java.util.Objects;
 import java.util.Optional;
 
 import static net.mcplayhd.lootrunstatistics.LootrunStatistics.*;
+import static net.mcplayhd.lootrunstatistics.helpers.FormatterHelper.formatString;
 import static net.mcplayhd.lootrunstatistics.helpers.FormatterHelper.getFormatted;
 
 public class ChestOpenListener {
     private BlockPos chestLocation = null;
     private boolean chestConsidered = false;
+    private int foundItemsUntilSlot = -1;
+    private long lastItemArrived = -1;
     private int dryThisChest = 0;
 
     private Loc getLastChestLocation() {
@@ -54,8 +57,12 @@ public class ChestOpenListener {
         BlockPos pos = e.getPos();
         IBlockState state = e.getEntityPlayer().world.getBlockState(pos);
         if (!(state.getBlock() instanceof BlockContainer)) return;
-        chestLocation = pos.toImmutable();
+        // reset state
         chestConsidered = false;
+        foundItemsUntilSlot = -1;
+        lastItemArrived = -1;
+        // storing the chest location
+        chestLocation = pos.toImmutable();
         getLogger().info("Clicked chest at " + chestLocation.getX() + "," + chestLocation.getY() + "," + chestLocation.getZ() + ".");
     }
 
@@ -65,26 +72,30 @@ public class ChestOpenListener {
      */
     @SubscribeEvent
     public void onGuiOpen(GuiScreenEvent.InitGuiEvent event) {
-        if (event.getGui() == null) return;
-        EntityPlayerSP player = getPlayer();
-        if (player == null) return;
-        Container openContainer = player.openContainer;
-        if (!(openContainer instanceof ContainerChest)) return;
-        InventoryBasic lowerInventory = (InventoryBasic) ((ContainerChest) openContainer).getLowerChestInventory();
-        String containerName = Objects.requireNonNull(TextFormatting.getTextWithoutFormattingCodes(lowerInventory.getName()));
-        if (containerName.startsWith("Loot Chest") && !containerName.contains("\u00a77\u00a7r") && !chestConsidered) {
-            // this is a loot chest, and we did not yet change its name.
-            getChestCountData().addChest();
-            int totalChests = getChestCountData().getTotalChests();
-            getDryData().addChestDry();
-            dryThisChest = getDryData().getChestsDry();
-            // "\u00a77\u00a7r" is our identifier.
-            // It won't show because it just sets the color and resets it immediately.
-            if (getConfiguration().displayTotalChestCountInChest()) {
-                lowerInventory.setCustomName(lowerInventory.getName() + "\u00a77\u00a7r" + " #" + getFormatted(totalChests));
-            } else {
-                lowerInventory.setCustomName(lowerInventory.getName() + "\u00a77\u00a7r");
+        try { // don't want to crash
+            if (event.getGui() == null) return;
+            EntityPlayerSP player = getPlayer();
+            if (player == null) return;
+            Container openContainer = player.openContainer;
+            if (!(openContainer instanceof ContainerChest)) return;
+            InventoryBasic lowerInventory = (InventoryBasic) ((ContainerChest) openContainer).getLowerChestInventory();
+            String containerName = Objects.requireNonNull(TextFormatting.getTextWithoutFormattingCodes(lowerInventory.getName()));
+            if (containerName.startsWith("Loot Chest") && !containerName.contains("\u00a77\u00a7r") && !chestConsidered) {
+                // this is a loot chest, and we did not yet change its name.
+                getChestCountData().addChest();
+                int totalChests = getChestCountData().getTotalChests();
+                getDryData().addChestDry();
+                dryThisChest = getDryData().getChestsDry();
+                // "\u00a77\u00a7r" is our identifier.
+                // It won't show because it just sets the color and resets it immediately.
+                if (getConfiguration().displayTotalChestCountInChest()) {
+                    lowerInventory.setCustomName(lowerInventory.getName() + "\u00a77\u00a7r" + " #" + getFormatted(totalChests));
+                } else {
+                    lowerInventory.setCustomName(lowerInventory.getName() + "\u00a77\u00a7r");
+                }
             }
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
         }
     }
 
@@ -112,28 +123,47 @@ public class ChestOpenListener {
                 // we only want to look at each chest once.
                 return;
             }
-            boolean itemFound = false;
-            for (int slot = 0; slot < lowerInventory.getSizeInventory(); slot++) {
+            int newFoundItemsUntilSlot = foundItemsUntilSlot;
+            for (int slot = foundItemsUntilSlot + 1; slot < lowerInventory.getSizeInventory(); slot++) {
                 ItemStack itemStack = lowerInventory.getStackInSlot(slot);
-                if (itemStack.getDisplayName().equals("Air"))
+                if (itemStack.getDisplayName().equals("Air")) {
                     continue;
-                itemFound = true;
-                break;
+                }
+                newFoundItemsUntilSlot = slot;
             }
-            if (!itemFound) {
-                // No items found so far...
+            if (newFoundItemsUntilSlot == foundItemsUntilSlot) {
+                // no (new) items found...
+                if (lastItemArrived != -1) {
+                    // we already found items before
+                    if (System.currentTimeMillis() > lastItemArrived + 250) {
+                        // we didn't get any new items for 250ms so let's consider this chest finished
+                        // because otherwise if the player manually adds an item to the chest it would count it
+                        chestConsidered = true;
+                    }
+                }
                 return;
             }
-            // we know that all items are loaded into the chest at the exact same time so that's why we can proceed here.
+            // new items were added so let's actually add them to the chest
             Loc loc = getLastChestLocation();
-            chestConsidered = true;
+            lastItemArrived = System.currentTimeMillis();
+            if (foundItemsUntilSlot == -1) {
+                // this is the first time we saw an item in this chest
+                getChests().registerOpened(loc);
+                containerName = containerName.substring("Loot Chest ".length());
+                String[] sp = containerName.split(" ");
+                String roman = sp[0];
+                int tier = FormatterHelper.convertRomanToArabic(roman);
+                getChests().setTier(loc, tier);
+            }
             boolean dryDataUpdated = false;
-            boolean chestsDatabaseUpdated = false;
-            for (int slot = 0; slot < lowerInventory.getSizeInventory(); slot++) {
+            // we can now check every slot up until the slot we found the last item in
+            getLogger().info("Checking from slot " + (foundItemsUntilSlot + 1) + " up to and including slot " + (newFoundItemsUntilSlot));
+            for (int slot = foundItemsUntilSlot + 1; slot <= newFoundItemsUntilSlot; slot++) {
                 try { // I intentionally cause exceptions because it's more convenient to develop
                     ItemStack itemStack = lowerInventory.getStackInSlot(slot);
-                    if (itemStack.getDisplayName().equals("Air"))
+                    if (itemStack.getDisplayName().equals("Air")) {
                         continue;
+                    }
                     List<String> lore = itemStack.getTooltip(player, ITooltipFlag.TooltipFlags.ADVANCED);
                     Optional<String> itemType = lore.stream()
                             .filter(line -> Objects.requireNonNull(TextFormatting.getTextWithoutFormattingCodes(line)).contains("Type: ")).findFirst();
@@ -166,7 +196,6 @@ public class ChestOpenListener {
                             getMythicFindsData().addMythic(mythicString, loc);
                         }
                         getChests().addBox(loc, type, tier, minMax);
-                        chestsDatabaseUpdated = true;
                     } else if (combatLvMin.isPresent()) {
                         int lvl = Integer.parseInt(
                                 Objects.requireNonNull(TextFormatting.getTextWithoutFormattingCodes(combatLvMin.get()))
@@ -175,9 +204,15 @@ public class ChestOpenListener {
                         );
                         String displayName = Objects.requireNonNull(TextFormatting.getTextWithoutFormattingCodes(itemStack.getDisplayName()));
                         if (displayName.startsWith("Potion of ")) {
-                            String[] displayNameSp = displayName.substring("Potion of ".length()).split(" ");
-                            String potionTypeSt = displayNameSp[displayNameSp.length - 2];
-                            PotionType potionType = PotionType.valueOf(potionTypeSt.toUpperCase());
+                            PotionType potionType;
+                            if (displayName.startsWith("Potion of Wisdom")) {
+                                potionType = PotionType.WISDOM;
+                            } else {
+                                // all other potions have [x/X] behind, so we can parse it by reading the second last string
+                                String[] displayNameSp = displayName.substring("Potion of ".length()).split(" ");
+                                String potionTypeSt = displayNameSp[displayNameSp.length - 2];
+                                potionType = PotionType.valueOf(potionTypeSt.toUpperCase());
+                            }
                             getChests().addPotion(loc, potionType, lvl);
                         } else {
                             displayName = displayName.replace("Chain Mail", "Chestplate");
@@ -187,12 +222,12 @@ public class ChestOpenListener {
                             dryDataUpdated = true;
                             getChests().addNormalItem(loc, type, lvl);
                         }
-                        chestsDatabaseUpdated = true;
                     } else {
                         String displayName = Objects.requireNonNull(TextFormatting.getTextWithoutFormattingCodes(itemStack.getDisplayName()));
                         if (displayName.equals("Emerald")) {
-                            // TODO: 01/07/2022 maybe also store emeralds in chest
-                            getDryData().addEmeralds(itemStack.getCount());
+                            int emeralds = itemStack.getCount();
+                            getChests().addEmeralds(loc, emeralds);
+                            getDryData().addEmeralds(emeralds);
                             dryDataUpdated = true;
                         } else if (displayName.contains("Earth Powder")
                                 || displayName.contains("Thunder Powder")
@@ -203,29 +238,53 @@ public class ChestOpenListener {
                             PowderType powderType = PowderType.valueOf(displayNameSp[1].toUpperCase());
                             String roman = displayNameSp[displayNameSp.length - 1];
                             int tier = FormatterHelper.convertRomanToArabic(roman);
-                            // TODO: 30/06/2022 store powder
-                            getLogger().info("Found " + powderType + " powder tier [" + tier + "]");
+                            getChests().addPowder(loc, powderType, tier);
+                        } else if (displayName.contains("Emerald Pouch")) {
+                            String roman = displayName.replace("Emerald Pouch [Tier ", "").replace("]", "");
+                            int tier = FormatterHelper.convertRomanToArabic(roman);
+                            getChests().addPouch(loc, tier);
+                        } else if (displayName.contains("✫✫✫")) {
+                            String name = displayName.replace(" [", "\n").split("\n")[0];
+                            // 'Toxic Lumps [§8✫✫✫§7]'
+                            // 'Sylphid Tears [§e✫§8✫✫§6]'
+                            // 'Soulbound Cinders [§d✫✫§8✫§5]'
+                            // 'Glacial Anomaly [§b✫✫✫§3]'
+                            String displayNameRaw = itemStack.getDisplayName();
+                            int tier = displayNameRaw.contains("[§8✫✫✫§7]") ? 0
+                                    : displayNameRaw.contains("[§e✫§8✫✫§6]") ? 1
+                                    : displayNameRaw.contains("[§d✫✫§8✫§5]") ? 2
+                                    : displayNameRaw.contains("[§b✫✫✫§3]") ? 3
+                                    : -1; // should never happen but whatever
+                            Optional<String> craftingLvMin = lore.stream()
+                                    .filter(line -> Objects.requireNonNull(TextFormatting.getTextWithoutFormattingCodes(line)).contains("Crafting Lv. Min: ")).findFirst();
+                            int level = -1;
+                            if (craftingLvMin.isPresent()) {
+                                level = Integer.parseInt(
+                                        Objects.requireNonNull(TextFormatting.getTextWithoutFormattingCodes(craftingLvMin.get()))
+                                                .replace("Crafting Lv. Min: ", "\n")
+                                                .split("\n")[1]
+                                );
+                            }
+                            getChests().addIngredient(loc, name, tier, level);
                         } else {
-                            // TODO: 29/06/2022 ingredients, pouches
-                            getLogger().info("Saved nothing for '" + itemStack.getDisplayName() + "'(" + itemStack.getCount() + ") in slot " + slot);
+                            player.sendMessage(formatString("§7[§3LootrunStatistics§7] §6Warning§7: §eSaved nothing for §7'" + itemStack.getDisplayName() + "§7'§8(§e" + itemStack.getCount() + "§8) §ein slot " + slot));
+                            getLogger().warn("Saved nothing for '" + itemStack.getDisplayName() + "'(" + itemStack.getCount() + ") in slot " + slot);
                         }
                     }
-                } catch (Exception ex) {
-                    getLogger().warn("Caught exception '" + ex.getMessage() + "' for slot " + slot);
+                } catch (Throwable throwable) {
+                    player.sendMessage(formatString("§7[§3LootrunStatistics§7] §6Warning§7: §eCaught exception §7'§e" + throwable.getMessage() + "§7' §efor slot " + slot));
+                    getLogger().warn("Caught exception '" + throwable.getMessage() + "' for slot " + slot);
                 }
             }
+            // updating the biggest slot where an item was found
+            foundItemsUntilSlot = newFoundItemsUntilSlot;
+            // saving dry data if something changed
             if (dryDataUpdated) {
                 getDryData().save();
             }
-            containerName = containerName.substring("Loot Chest ".length());
-            String[] sp = containerName.split(" ");
-            String roman = sp[0];
-            int tier = FormatterHelper.convertRomanToArabic(roman);
-            chestsDatabaseUpdated = chestsDatabaseUpdated || getChests().setTier(loc, tier);
-            if (chestsDatabaseUpdated) {
-                getChests().save();
-                getChests().updateChestInfo(loc);
-            }
+            // chest data is updated no matter what
+            getChests().save();
+            getChests().updateChestInfo(loc);
         } catch (Throwable throwable) {
             throwable.printStackTrace();
         }

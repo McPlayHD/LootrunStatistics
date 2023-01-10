@@ -1,5 +1,6 @@
-package net.mcplayhd.lootrunstatistics.gui.configuration;
+package net.mcplayhd.lootrunstatistics.gui.guis.configuration;
 
+import net.mcplayhd.lootrunstatistics.LootrunStatistics;
 import net.mcplayhd.lootrunstatistics.api.WynncraftAPI;
 import net.mcplayhd.lootrunstatistics.gui.CustomGui;
 import net.mcplayhd.lootrunstatistics.gui.drawables.DrawableLineButtonRight;
@@ -17,9 +18,11 @@ import java.util.Date;
 import static net.mcplayhd.lootrunstatistics.LootrunStatistics.*;
 
 public class ConfigurationGuiMain extends CustomGui {
+    private static boolean undoResetChests = false;
+    private static boolean restoreError = false;
 
     public ConfigurationGuiMain(GuiScreen parentScreen) {
-        super(parentScreen);
+        super(parentScreen, 60, LootrunStatistics.NAME + " v" + LootrunStatistics.VERSION, "by McPlayHD");
     }
 
     @Override
@@ -131,6 +134,42 @@ public class ConfigurationGuiMain extends CustomGui {
                         WynncraftAPI.loadItems();
                         Mythic.loadMythicSettings();
                         getChests().updateAllNotes();
+                    }
+                }
+        ));
+        addLine(new DrawableLineTextLeftButtonRight(
+                ++id,
+                "Reset all chests",
+                width / 2 + 10,
+                150,
+                lineHeight,
+                () -> {
+                    if (undoResetChests) {
+                        return "Undo";
+                    } else {
+                        if (restoreError) {
+                            return "Error restoring";
+                        } else {
+                            return "Reset";
+                        }
+                    }
+                },
+                true,
+                () -> {
+                    if (undoResetChests) {
+                        boolean restoreResult = getChests().restoreFromBackup();
+                        if (!restoreResult) {
+                            restoreError = true;
+                            return;
+                        }
+                        getChests().save();
+                        getChests().updateAllNotes();
+                        undoResetChests = false;
+                    } else {
+                        getChests().backup();
+                        getChests().reset();
+                        getChests().save();
+                        undoResetChests = true;
                     }
                 }
         ));

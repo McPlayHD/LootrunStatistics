@@ -13,7 +13,7 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
-version = '1.0.2'
+version = '1.1.0'
 group = 'net.mcplayhd.lootrunstatistics' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'lootrunstatistics'
 
@@ -110,6 +110,10 @@ processResources {
 jar.finalizedBy('reobfJar')
 // However if you are in a multi-project build, dev time needs unobfed jar files, so you can delay the obfuscation until publishing by doing
 //publish.dependsOn('reobfJar')
+
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}
 
 publishing {
     publications {

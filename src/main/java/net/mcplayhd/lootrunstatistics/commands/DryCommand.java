@@ -4,16 +4,15 @@ import net.mcplayhd.lootrunstatistics.enums.Tier;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.client.IClientCommand;
 
 import javax.annotation.Nonnull;
+import java.text.DecimalFormat;
 import java.util.Map;
 
 import static net.mcplayhd.lootrunstatistics.LootrunStatistics.getChestCountData;
 import static net.mcplayhd.lootrunstatistics.LootrunStatistics.getDryData;
-import static net.mcplayhd.lootrunstatistics.helpers.FormatterHelper.getFormatted;
-import static net.mcplayhd.lootrunstatistics.helpers.FormatterHelper.getFormattedDry;
+import static net.mcplayhd.lootrunstatistics.helpers.FormatterHelper.*;
 
 public class DryCommand extends CommandBase implements IClientCommand {
 
@@ -41,19 +40,21 @@ public class DryCommand extends CommandBase implements IClientCommand {
 
     @Override
     public void execute(@Nonnull MinecraftServer server, @Nonnull ICommandSender sender, @Nonnull String[] args) {
-        sender.sendMessage(new TextComponentString("§aEmeralds §edry§7: §a" + getFormatted(getDryData().getEmeraldsDry())));
+        sender.sendMessage(formatString("§aEmeralds §edry§7: §a" + getFormatted(getDryData().getEmeraldsDry())));
         Map<Tier, Integer> tiers = getDryData().getItemsDry();
         int sum = tiers.values().stream().mapToInt(i -> i).sum();
-        sender.sendMessage(new TextComponentString("§eItems dry§7: §e" + getFormatted(sum)));
+        sender.sendMessage(formatString("§eItems dry§7: §e" + getFormatted(sum)));
+        DecimalFormat decimalFormat = new DecimalFormat("#0.0");
         for (Map.Entry<Tier, Integer> tierDry : tiers.entrySet()) {
             Tier tier = tierDry.getKey();
             if (tier == Tier.MYTHIC)
                 continue; // will never be seen there
             int dry = tierDry.getValue();
-            sender.sendMessage(new TextComponentString("§7  " + tier.getDisplayName() + "§7: §e" + getFormatted(dry)));
+            double percentage = sum == 0 ? 0 : dry / (double) sum * 100;
+            sender.sendMessage(formatString("§7  " + tier.getDisplayName() + "§7: §e" + getFormatted(dry) + " §7(§e" + decimalFormat.format(percentage) + "%§7)"));
         }
         int dry = getDryData().getChestsDry();
         int total = getChestCountData().getTotalChests();
-        sender.sendMessage(new TextComponentString("§eChests dry§7: " + getFormattedDry(dry) + " §etotal§7: §3" + getFormatted(total)));
+        sender.sendMessage(formatString("§eChests dry§7: " + getFormattedDry(dry) + " §etotal§7: §3" + getFormatted(total)));
     }
 }

@@ -34,6 +34,9 @@ public class NoteDrawer {
                 = confirmedRange < 8
                 && minMax.getMax() >= 100
                 && chestInfo.getLevelsSeen().values().stream().mapToInt(i -> i).sum() > 69;
+        if (highLevelUnconfirmedButEnoughItems) {
+            minMax.updateMax(minMax.getMin() + 8);
+        }
         if (getConfiguration().displayLevelRangeAboveChests()) {
             if (minMax.isEmpty()) {
                 note.append("§b").append("Lv. ? - ?");
@@ -45,7 +48,7 @@ public class NoteDrawer {
                     // Sadly, in Wynncraft there are no "Normal" items above level 100. We have to improvise.
                     // In 80 "Normal" items we didn't find the edge case item level once.
                     // We just assume the chest level to be from `min` to `(min+8)`
-                    note.append("§b").append("Lv. §3").append(minMax.getMin()).append(" §b- §6").append(minMax.getMin() + 8);
+                    note.append("§b").append("Lv. §3").append(minMax.getMin()).append(" §b- §6").append(minMax.getMax());
                 } else if (confirmedRange == 8) {
                     note.append("§b").append("Lv. §3").append(minMax.getMin()).append(" §b- §3").append(minMax.getMax());
                 } else {
@@ -65,9 +68,6 @@ public class NoteDrawer {
                             playerLevel = 100;
                         }
                         minMax = new MinMax(playerLevel - 4, playerLevel + 4);
-                    }
-                    if (highLevelUnconfirmedButEnoughItems) {
-                        minMax.updateMax(minMax.getMin() + 8);
                     }
                     Set<Mythic> possibleMythics = new HashSet<>();
                     Set<Mythic> ignoredMythics = new HashSet<>();
