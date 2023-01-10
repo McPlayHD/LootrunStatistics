@@ -153,6 +153,14 @@ public class CustomGui extends GuiScreen {
                     centerTextField.drawTextBox();
                 }
             }
+            if (line instanceof LineMythicFindHistoryColumnNames) {
+                LineMythicFindHistoryColumnNames line1 = (LineMythicFindHistoryColumnNames) line;
+                int totalWidth = 420; // everyone that players with a smaller width is weird.
+                int leftWidth = 170;
+                this.drawString(fontRenderer, line1.getTextLeftCenterRight(), width / 2 - totalWidth / 2 + 18 + columnSpace, y + (lineHeight - 8) / 2, new Color(255, 255, 255).getRGB());
+                this.drawString(fontRenderer, line1.getTextCenterLeft(), width / 2 - totalWidth / 2 + leftWidth, y + (lineHeight - 8) / 2, new Color(255, 255, 255).getRGB());
+                this.drawString(fontRenderer, line1.getTextCenterRight(), width / 2 - totalWidth / 2 + leftWidth + 80 + columnSpace / 2, y + (lineHeight - 8) / 2, new Color(255, 255, 255).getRGB());
+            }
             if (line instanceof LineMythicFindHistoryEntry) {
                 int totalWidth = 420; // everyone that players with a smaller width is weird.
                 int leftWidth = 170;
