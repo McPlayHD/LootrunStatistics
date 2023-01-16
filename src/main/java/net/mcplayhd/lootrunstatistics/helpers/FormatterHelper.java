@@ -1,11 +1,7 @@
 package net.mcplayhd.lootrunstatistics.helpers;
 
+import net.mcplayhd.lootrunstatistics.configuration.utils.GroupingSeparator;
 import net.minecraft.util.text.TextComponentString;
-
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.text.NumberFormat;
-import java.util.Locale;
 
 import static net.mcplayhd.lootrunstatistics.LootrunStatistics.getConfiguration;
 
@@ -15,15 +11,20 @@ public class FormatterHelper {
         return new TextComponentString(string.replace("§", "\u00a7"));
     }
 
-    public static String getFormatted(int number) {
-        Character groupingSeparator = getConfiguration().getGroupingSeparator().getSeparator();
-        if (groupingSeparator == null)
-            return "" + number;
-        DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.US);
-        DecimalFormatSymbols symbols = formatter.getDecimalFormatSymbols();
-        symbols.setGroupingSeparator(groupingSeparator);
-        formatter.setDecimalFormatSymbols(symbols);
-        return formatter.format(number);
+    public static String getFormatted(long number) {
+        GroupingSeparator groupingSeparator = getConfiguration().getGroupingSeparator();
+        if (groupingSeparator == null || groupingSeparator == GroupingSeparator.NONE) {
+            return Long.toString(number);
+        }
+        char[] numberChars = Long.toString(number).toCharArray();
+        StringBuilder result = new StringBuilder();
+        for (int index = 0; index < numberChars.length; index++) {
+            if (index > 0 && index % 3 == 0) {
+                result.insert(0, groupingSeparator.getSeparator());
+            }
+            result.insert(0, numberChars[numberChars.length - 1 - index]);
+        }
+        return result.toString();
     }
 
     public static String getFormattedDry(int dry) {
