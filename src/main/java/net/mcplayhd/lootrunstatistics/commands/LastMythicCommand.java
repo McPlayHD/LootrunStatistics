@@ -1,6 +1,7 @@
 package net.mcplayhd.lootrunstatistics.commands;
 
 import net.mcplayhd.lootrunstatistics.enums.Tier;
+import net.mcplayhd.lootrunstatistics.utils.Mythic;
 import net.mcplayhd.lootrunstatistics.utils.MythicFind;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
@@ -52,8 +53,15 @@ public class LastMythicCommand extends CommandBase implements IClientCommand {
             sender.sendMessage(formatString("§cNo §5Mythics §cfound."));
             return;
         }
-        sender.sendMessage(formatString("§eLast §5Mythic§7: §5" + lastMythic.getMythic()));
-        sender.sendMessage(formatString("§eIn chest §8#§3" + getFormatted(lastMythic.getChestCount()) + " §7(§" + getFormattedDry(lastMythic.getDry()) + " §edry§7)"));
+        Mythic mythic = lastMythic.getMythic();
+        String name;
+        if (mythic == null) {
+            name = lastMythic.getBoxName();
+        } else {
+            name = mythic.getDisplayName();
+        }
+        sender.sendMessage(formatString("§eLast §5Mythic§7: §5" + name));
+        sender.sendMessage(formatString("§eIn chest §8#§3" + getFormatted(lastMythic.getChestCount()) + " §7(" + getFormattedDry(lastMythic.getDry()) + " §edry§7)"));
         Map<Tier, Integer> tiers = lastMythic.getItemsDry();
         int sum = tiers.values().stream().mapToInt(i -> i).sum();
         sender.sendMessage(formatString("§eAfter items§7: §e" + getFormatted(sum)));
