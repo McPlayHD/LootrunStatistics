@@ -23,6 +23,13 @@ public class MythicFindsData {
 
     protected List<MythicFind> mythicFinds;
 
+    public List<MythicFind> getMythicFinds() {
+        if (mythicFinds == null) {
+            mythicFinds = new ArrayList<>();
+        }
+        return mythicFinds;
+    }
+
     public MythicFindsData(List<MythicFind> mythicFinds) {
         this.mythicFinds = mythicFinds;
     }
@@ -47,16 +54,13 @@ public class MythicFindsData {
                 getDryData().getItemsDry(),
                 getDryData().getEmeraldsDry()
         );
-        mythicFinds.add(find);
+        getMythicFinds().add(find);
         save();
         getDryData().reset();
     }
 
-    public List<MythicFind> getMythicFinds() {
-        return new ArrayList<>(this.mythicFinds);
-    }
-
     public MythicFind getLastMythic() {
+        List<MythicFind> mythicFinds = getMythicFinds();
         if (mythicFinds.isEmpty()) {
             return null;
         } else {
