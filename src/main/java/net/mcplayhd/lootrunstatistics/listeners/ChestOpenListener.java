@@ -215,6 +215,8 @@ public class ChestOpenListener {
                             }
                             getChests().addPotion(loc, potionType, lvl);
                         } else {
+                            displayName = displayName.replace("Cap", "Helmet");
+                            displayName = displayName.replace("Tunic", "Chestplate");
                             displayName = displayName.replace("Chain Mail", "Chestplate");
                             String[] displayNameSp = displayName.split(" ");
                             ItemType type = ItemType.valueOf(displayNameSp[displayNameSp.length - 1].toUpperCase());
