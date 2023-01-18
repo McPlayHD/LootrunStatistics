@@ -218,6 +218,7 @@ public class ChestOpenListener {
                             displayName = displayName.replace("Cap", "Helmet");
                             displayName = displayName.replace("Tunic", "Chestplate");
                             displayName = displayName.replace("Chain Mail", "Chestplate");
+                            displayName = displayName.replace("Stick", "Wand");
                             String[] displayNameSp = displayName.split(" ");
                             ItemType type = ItemType.valueOf(displayNameSp[displayNameSp.length - 1].toUpperCase());
                             getDryData().addItemDry(Tier.NORMAL);
