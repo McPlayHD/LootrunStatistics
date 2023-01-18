@@ -10,6 +10,8 @@ import net.mcplayhd.lootrunstatistics.gui.guis.configuration.ConfigurationGuiMai
 import net.mcplayhd.lootrunstatistics.gui.guis.history.HistoryGuiMythics;
 import net.mcplayhd.lootrunstatistics.helpers.DesktopHelper;
 import net.mcplayhd.lootrunstatistics.helpers.VersionHelper;
+import net.mcplayhd.lootrunstatistics.listeners.ChestOpenListener;
+import net.mcplayhd.lootrunstatistics.utils.Region;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
@@ -99,6 +101,20 @@ public class MainCommand extends CommandBase implements IClientCommand {
                 int amount = allItems.getOrDefault(tier, 0);
                 double percentage = total == 0 ? 0 : amount / (double) total * 100;
                 sender.sendMessage(formatString("§7  " + tier.getDisplayName() + "§7: §e" + getFormatted(amount) + " §7(§e" + decimalFormat.format(percentage) + "%§7)"));
+            }
+            return;
+        }
+        if (args.length > 1 && args[0].equalsIgnoreCase("region")) {
+            Region region = Region.fromString(args[1]);
+            ChestOpenListener.selectedRegion = region;
+            if (region == null) {
+                if (args[1].equalsIgnoreCase("reset")) {
+                    sender.sendMessage(formatString("§eNew region§7: §c" + null));
+                } else {
+                    sender.sendMessage(formatString("§cUnknown region§7: §e" + args[1]));
+                }
+            } else {
+                sender.sendMessage(formatString("§eNew region§7: §a" + region));
             }
             return;
         }

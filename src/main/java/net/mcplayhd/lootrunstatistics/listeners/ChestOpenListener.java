@@ -1,5 +1,8 @@
 package net.mcplayhd.lootrunstatistics.listeners;
 
+import net.mcplayhd.lootrunstatistics.api.WynncraftChestsAPI;
+import net.mcplayhd.lootrunstatistics.api.utils.ChestReport;
+import net.mcplayhd.lootrunstatistics.chests.utils.ChestInfo;
 import net.mcplayhd.lootrunstatistics.chests.utils.MinMax;
 import net.mcplayhd.lootrunstatistics.enums.ItemType;
 import net.mcplayhd.lootrunstatistics.enums.PotionType;
@@ -8,6 +11,7 @@ import net.mcplayhd.lootrunstatistics.enums.Tier;
 import net.mcplayhd.lootrunstatistics.helpers.DrawStringHelper;
 import net.mcplayhd.lootrunstatistics.helpers.FormatterHelper;
 import net.mcplayhd.lootrunstatistics.utils.Loc;
+import net.mcplayhd.lootrunstatistics.utils.Region;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -35,6 +39,7 @@ import static net.mcplayhd.lootrunstatistics.helpers.FormatterHelper.formatStrin
 import static net.mcplayhd.lootrunstatistics.helpers.FormatterHelper.getFormatted;
 
 public class ChestOpenListener {
+    public static Region selectedRegion = null;
     private BlockPos chestLocation = null;
     private boolean chestConsidered = false;
     private int foundItemsUntilSlot = -1;
@@ -131,6 +136,7 @@ public class ChestOpenListener {
                 }
                 newFoundItemsUntilSlot = slot;
             }
+            Loc loc = getLastChestLocation();
             if (newFoundItemsUntilSlot == foundItemsUntilSlot) {
                 // no (new) items found...
                 if (lastItemArrived != -1) {
@@ -139,12 +145,18 @@ public class ChestOpenListener {
                         // we didn't get any new items for 250ms so let's consider this chest finished
                         // because otherwise if the player manually adds an item to the chest it would count it
                         chestConsidered = true;
+                        // report chest
+                        ChestReport report = new ChestReport(loc, selectedRegion);
+                        ChestInfo chestInfo = getChests().getChestInfo(loc);
+                        report.setTier(chestInfo.getTier());
+                        report.setMinLevel(chestInfo.getMinMax().getMin());
+                        report.setMaxLevel(chestInfo.getMinMax().getMax());
+                        WynncraftChestsAPI.reportChest(report);
                     }
                 }
                 return;
             }
             // new items were added so let's actually add them to the chest
-            Loc loc = getLastChestLocation();
             lastItemArrived = System.currentTimeMillis();
             if (foundItemsUntilSlot == -1) {
                 // this is the first time we saw an item in this chest
