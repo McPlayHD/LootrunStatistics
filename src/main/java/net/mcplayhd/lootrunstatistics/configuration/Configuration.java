@@ -2,6 +2,7 @@ package net.mcplayhd.lootrunstatistics.configuration;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import net.mcplayhd.lootrunstatistics.configuration.utils.GroupingSeparator;
 import net.mcplayhd.lootrunstatistics.helpers.FileHelper;
 
 import java.io.File;
@@ -98,29 +99,6 @@ public class Configuration {
 
         public String getDescription() {
             return description;
-        }
-    }
-
-    public enum GroupingSeparator {
-        NONE("<None>", null),
-        SPACE("<Space>", ' '),
-        APOSTROPHE("'", '\''),
-        COMMA(",", ','),
-        ;
-        final String description;
-        final Character separator;
-
-        GroupingSeparator(String description, Character separator) {
-            this.description = description;
-            this.separator = separator;
-        }
-
-        public String getDescription() {
-            return description;
-        }
-
-        public Character getSeparator() {
-            return separator;
         }
     }
 }

@@ -69,6 +69,10 @@ public class MythicFind {
         return null;
     }
 
+    public String getBoxName() {
+        return mythic;
+    }
+
     public MythicFindItem getMythicFindItem() {
         return mythicFindItem;
     }

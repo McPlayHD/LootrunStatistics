@@ -1,5 +1,7 @@
 package net.mcplayhd.lootrunstatistics.helpers;
 
+import org.apache.commons.io.FileUtils;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
@@ -20,5 +22,13 @@ public class FileHelper {
         try (BufferedWriter writer = Files.newBufferedWriter(file.toPath(), StandardCharsets.UTF_8)) {
             writer.write(content);
         }
+    }
+
+    public static void backupFile(File file) throws IOException {
+        File backupFile = new File(file.getParentFile().getPath() + "/." + file.getName() + ".backup");
+        if (backupFile.exists()) {
+            backupFile.delete();
+        }
+        FileUtils.copyFile(file, backupFile);
     }
 }
