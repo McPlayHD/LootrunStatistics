@@ -24,6 +24,7 @@ public class ChestCountData {
 
     public static ChestCountData load() {
         try {
+            FileHelper.backupFile(file);
             return gson.fromJson(FileHelper.readFile(file), ChestCountData.class);
         } catch (Exception ignored) {
             // attempting to import from stats stored in chestcountmod and wynntils...
