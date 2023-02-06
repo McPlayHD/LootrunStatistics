@@ -18,6 +18,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.init.Items;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.InventoryBasic;
@@ -131,7 +132,7 @@ public class ChestOpenListener {
             int newFoundItemsUntilSlot = foundItemsUntilSlot;
             for (int slot = foundItemsUntilSlot + 1; slot < lowerInventory.getSizeInventory(); slot++) {
                 ItemStack itemStack = lowerInventory.getStackInSlot(slot);
-                if (itemStack.getDisplayName().equals("Air")) {
+                if (itemStack.getItem() == Items.AIR) {
                     continue;
                 }
                 newFoundItemsUntilSlot = slot;
@@ -173,7 +174,7 @@ public class ChestOpenListener {
             for (int slot = foundItemsUntilSlot + 1; slot <= newFoundItemsUntilSlot; slot++) {
                 try { // I intentionally cause exceptions because it's more convenient to develop
                     ItemStack itemStack = lowerInventory.getStackInSlot(slot);
-                    if (itemStack.getDisplayName().equals("Air")) {
+                    if (itemStack.getItem() == Items.AIR) {
                         continue;
                     }
                     List<String> lore = itemStack.getTooltip(player, ITooltipFlag.TooltipFlags.ADVANCED);
@@ -230,6 +231,7 @@ public class ChestOpenListener {
                             displayName = displayName.replace("Cap", "Helmet");
                             displayName = displayName.replace("Tunic", "Chestplate");
                             displayName = displayName.replace("Chain Mail", "Chestplate");
+                            displayName = displayName.replace("Stick", "Wand");
                             String[] displayNameSp = displayName.split(" ");
                             ItemType type = ItemType.valueOf(displayNameSp[displayNameSp.length - 1].toUpperCase());
                             getDryData().addItemDry(Tier.NORMAL);

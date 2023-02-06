@@ -25,6 +25,7 @@ public class DryData {
 
     public static DryData load() {
         try {
+            FileHelper.backupFile(file);
             return gson.fromJson(FileHelper.readFile(file), DryData.class);
         } catch (Exception ignored) {
             return new DryData();

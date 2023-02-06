@@ -36,6 +36,7 @@ public class MythicFindsData {
 
     public static MythicFindsData load() {
         try {
+            FileHelper.backupFile(file);
             return gson.fromJson(FileHelper.readFile(file), MythicFindsData.class);
         } catch (Exception ignored) {
             MythicFindsData data = StatsImporter.importMythicFinds();
