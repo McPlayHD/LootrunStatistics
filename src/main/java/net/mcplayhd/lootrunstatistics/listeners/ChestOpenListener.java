@@ -189,19 +189,15 @@ public class ChestOpenListener {
                 Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringSelection, null);
                 switch (roman) {
                     case "§7[§f✫§8✫✫✫§7]§7§r":
-                        System.out.println("type of chest: 1");
                         tier = 1;
                         break;
                     case "§e[§6✫✫§8✫✫§e]§7§r":
-                        System.out.println("type of chest: 2");
                         tier = 2;
                         break;
                     case "§5[§d✫✫✫§8✫§5]§7§r":
-                        System.out.println("type of chest: 3");
                         tier = 3;
                         break;
                     case "§3[§b✫✫✫✫§3]§7§r":
-                        System.out.println("type of chest: 4");
                         tier = 4;
                         break;
                 }
