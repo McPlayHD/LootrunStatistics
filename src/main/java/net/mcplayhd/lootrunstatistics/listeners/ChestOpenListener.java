@@ -112,7 +112,7 @@ public class ChestOpenListener {
             InventoryBasic lowerInventory = (InventoryBasic) ((ContainerChest) openContainer).getLowerChestInventory();
             String containerName = Objects.requireNonNull(TextFormatting.getTextWithoutFormattingCodes(lowerInventory.getName()));
 
-            if (containerName.startsWith("Loot Chest") && !containerName.contains("§7§r") && !chestConsidered) {
+            if ((containerName.startsWith("Loot Chest") || containerName.startsWith("Objective Rewards") || containerName.startsWith("Challenge Rewards")) && !containerName.contains("§7§r") && !chestConsidered) {
                 // this is a loot chest, and we did not yet change its name.
                 getChestCountData().addChest();
                 int totalChests = getChestCountData().getTotalChests();
@@ -141,7 +141,7 @@ public class ChestOpenListener {
             if (!(openContainer instanceof ContainerChest)) return;
             InventoryBasic lowerInventory = (InventoryBasic) ((ContainerChest) openContainer).getLowerChestInventory();
             String containerName = Objects.requireNonNull(TextFormatting.getTextWithoutFormattingCodes(lowerInventory.getName()));
-            if (!containerName.startsWith("Loot Chest")) return;
+            if (!containerName.startsWith("Loot Chest") && !containerName.startsWith("Objective Rewards") && !containerName.startsWith("Challenge Rewards")) return;
             if (getConfiguration().displayDryCountInChest()) {
                 // Credits to https://github.com/albarv340/chestcountmod
                 GlStateManager.pushMatrix();
@@ -181,27 +181,26 @@ public class ChestOpenListener {
             if (foundItemsUntilSlot == -1) {
                 // this is the first time we saw an item in this chest
                 getChests().registerOpened(loc);
-                String[] sp = lowerInventory.getName().substring("Loot Chest ".length()).split(" ");
-                String roman = sp[0];
-                int tier = 1;
-                System.out.println(roman);
-                StringSelection stringSelection = new StringSelection(roman);
-                Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringSelection, null);
-                switch (roman) {
-                    case "§7[§f✫§8✫✫✫§7]§7§r":
-                        tier = 1;
-                        break;
-                    case "§e[§6✫✫§8✫✫§e]§7§r":
-                        tier = 2;
-                        break;
-                    case "§5[§d✫✫✫§8✫§5]§7§r":
-                        tier = 3;
-                        break;
-                    case "§3[§b✫✫✫✫§3]§7§r":
-                        tier = 4;
-                        break;
+                if (containerName.startsWith("Loot Chest")) {
+                    String[] sp = lowerInventory.getName().substring("Loot Chest ".length()).split(" ");
+                    String roman = sp[0];
+                    int tier = 1;
+                    switch (roman) {
+                        case "§7[§f✫§8✫✫✫§7]§7§r":
+                            tier = 1;
+                            break;
+                        case "§e[§6✫✫§8✫✫§e]§7§r":
+                            tier = 2;
+                            break;
+                        case "§5[§d✫✫✫§8✫§5]§7§r":
+                            tier = 3;
+                            break;
+                        case "§3[§b✫✫✫✫§3]§7§r":
+                            tier = 4;
+                            break;
+                    }
+                    getChests().setTier(loc, tier);
                 }
-                getChests().setTier(loc, tier);
             }
             boolean dryDataUpdated = false;
             // we can now check every slot up until the slot we found the last item in
