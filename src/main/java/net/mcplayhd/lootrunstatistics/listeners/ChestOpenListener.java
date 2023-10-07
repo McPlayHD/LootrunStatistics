@@ -278,6 +278,11 @@ public class ChestOpenListener {
                             getChests().addEmeralds(loc, emeralds);
                             getDryData().addEmeralds(emeralds);
                             dryDataUpdated = true;
+                        } else if (displayName.equals("Emerald Block")) {
+                            int emeralds = itemStack.getCount() * 64;
+                            getChests().addEmeralds(loc, emeralds);
+                            getDryData().addEmeralds(emeralds);
+                            dryDataUpdated = true;
                         } else if (displayName.contains("Earth Powder")
                                 || displayName.contains("Thunder Powder")
                                 || displayName.contains("Fire Powder")
