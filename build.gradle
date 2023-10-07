@@ -2,18 +2,19 @@ buildscript {
     repositories {
         maven { url = 'https://maven.minecraftforge.net/' }
         mavenCentral()
-    }
-    dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:3.+'
+        gradlePluginPortal()
     }
 }
 
-apply plugin: 'net.minecraftforge.gradle'
-// Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
-apply plugin: 'eclipse'
-apply plugin: 'maven-publish'
+plugins {
+    id "java"
+    id "idea"
+    id "maven-publish"
+    id "net.minecraftforge.gradle" version "5.1.+"
+    id "com.github.johnrengelman.shadow" version "7.1.0"
+}
 
-version = '1.1.1'
+version = '1.1.2'
 group = 'net.mcplayhd.lootrunstatistics' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'lootrunstatistics'
 
@@ -37,6 +38,8 @@ minecraft {
         client {
             workingDirectory project.file('run')
 
+            property("devauth.configDir", project.file(".devauth").absolutePath)
+
             // Recommended logging data for a userdev environment
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
 
@@ -53,6 +56,11 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
         }
     }
+}
+
+repositories {
+    maven { url = "https://maven.minecraftforge.net" }
+    maven { url = "https://files.minecraftforge.net/maven" }
 }
 
 dependencies {

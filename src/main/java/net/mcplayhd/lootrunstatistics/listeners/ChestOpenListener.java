@@ -14,6 +14,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerChest;
@@ -22,11 +24,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.GuiScreenEvent;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.awt.*;
+import java.awt.datatransfer.StringSelection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -51,7 +56,7 @@ public class ChestOpenListener {
     private EntityPlayerSP getPlayer() {
         return Minecraft.getMinecraft().player;
     }
-
+    /*
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void openChest(PlayerInteractEvent.RightClickBlock e) {
         if (e.isCanceled()) return;
@@ -65,6 +70,31 @@ public class ChestOpenListener {
         // storing the chest location
         chestLocation = pos.toImmutable();
         getLogger().info("Clicked chest at " + chestLocation.getX() + "," + chestLocation.getY() + "," + chestLocation.getZ() + ".");
+    }
+    */
+
+    @SubscribeEvent
+    public void onRightClick(PlayerInteractEvent.EntityInteract event) {
+        Entity entity = event.getTarget();
+        if (entity instanceof EntitySlime) {
+            BlockPos pos = entity.getPosition();
+            chestConsidered = false;
+            foundItemsUntilSlot = -1;
+            lastItemArrived = -1;
+            chestLocation = pos.toImmutable();
+        }
+    }
+
+    @SubscribeEvent
+    public void onLeftClick(AttackEntityEvent event) {
+        Entity entity = event.getTarget();
+        if (entity instanceof EntitySlime) {
+            BlockPos pos = entity.getPosition();
+            chestConsidered = false;
+            foundItemsUntilSlot = -1;
+            lastItemArrived = -1;
+            chestLocation = pos.toImmutable();
+        }
     }
 
     /*
@@ -81,7 +111,8 @@ public class ChestOpenListener {
             if (!(openContainer instanceof ContainerChest)) return;
             InventoryBasic lowerInventory = (InventoryBasic) ((ContainerChest) openContainer).getLowerChestInventory();
             String containerName = Objects.requireNonNull(TextFormatting.getTextWithoutFormattingCodes(lowerInventory.getName()));
-            if (containerName.startsWith("Loot Chest") && !containerName.contains("\u00a77\u00a7r") && !chestConsidered) {
+
+            if ((containerName.startsWith("Loot Chest") || containerName.startsWith("Objective Rewards") || containerName.startsWith("Challenge Rewards")) && !containerName.contains("§7§r") && !chestConsidered) {
                 // this is a loot chest, and we did not yet change its name.
                 getChestCountData().addChest();
                 int totalChests = getChestCountData().getTotalChests();
@@ -90,9 +121,9 @@ public class ChestOpenListener {
                 // "\u00a77\u00a7r" is our identifier.
                 // It won't show because it just sets the color and resets it immediately.
                 if (getConfiguration().displayTotalChestCountInChest()) {
-                    lowerInventory.setCustomName(lowerInventory.getName() + "\u00a77\u00a7r" + " #" + getFormatted(totalChests));
+                    lowerInventory.setCustomName(lowerInventory.getName() + "§7§r" + " #" + getFormatted(totalChests));
                 } else {
-                    lowerInventory.setCustomName(lowerInventory.getName() + "\u00a77\u00a7r");
+                    lowerInventory.setCustomName(lowerInventory.getName() + "§7§r");
                 }
             }
         } catch (Throwable throwable) {
@@ -110,7 +141,7 @@ public class ChestOpenListener {
             if (!(openContainer instanceof ContainerChest)) return;
             InventoryBasic lowerInventory = (InventoryBasic) ((ContainerChest) openContainer).getLowerChestInventory();
             String containerName = Objects.requireNonNull(TextFormatting.getTextWithoutFormattingCodes(lowerInventory.getName()));
-            if (!containerName.startsWith("Loot Chest")) return;
+            if (!containerName.startsWith("Loot Chest") && !containerName.startsWith("Objective Rewards") && !containerName.startsWith("Challenge Rewards")) return;
             if (getConfiguration().displayDryCountInChest()) {
                 // Credits to https://github.com/albarv340/chestcountmod
                 GlStateManager.pushMatrix();
@@ -150,15 +181,29 @@ public class ChestOpenListener {
             if (foundItemsUntilSlot == -1) {
                 // this is the first time we saw an item in this chest
                 getChests().registerOpened(loc);
-                containerName = containerName.substring("Loot Chest ".length());
-                String[] sp = containerName.split(" ");
-                String roman = sp[0];
-                int tier = FormatterHelper.convertRomanToArabic(roman);
-                getChests().setTier(loc, tier);
+                if (containerName.startsWith("Loot Chest")) {
+                    String[] sp = lowerInventory.getName().substring("Loot Chest ".length()).split(" ");
+                    String roman = sp[0];
+                    int tier = 1;
+                    switch (roman) {
+                        case "§7[§f✫§8✫✫✫§7]§7§r":
+                            tier = 1;
+                            break;
+                        case "§e[§6✫✫§8✫✫§e]§7§r":
+                            tier = 2;
+                            break;
+                        case "§5[§d✫✫✫§8✫§5]§7§r":
+                            tier = 3;
+                            break;
+                        case "§3[§b✫✫✫✫§3]§7§r":
+                            tier = 4;
+                            break;
+                    }
+                    getChests().setTier(loc, tier);
+                }
             }
             boolean dryDataUpdated = false;
             // we can now check every slot up until the slot we found the last item in
-            getLogger().info("Checking from slot " + (foundItemsUntilSlot + 1) + " up to and including slot " + (newFoundItemsUntilSlot));
             for (int slot = foundItemsUntilSlot + 1; slot <= newFoundItemsUntilSlot; slot++) {
                 try { // I intentionally cause exceptions because it's more convenient to develop
                     ItemStack itemStack = lowerInventory.getStackInSlot(slot);
@@ -230,6 +275,11 @@ public class ChestOpenListener {
                         String displayName = Objects.requireNonNull(TextFormatting.getTextWithoutFormattingCodes(itemStack.getDisplayName()));
                         if (displayName.equals("Emerald")) {
                             int emeralds = itemStack.getCount();
+                            getChests().addEmeralds(loc, emeralds);
+                            getDryData().addEmeralds(emeralds);
+                            dryDataUpdated = true;
+                        } else if (displayName.equals("Emerald Block")) {
+                            int emeralds = itemStack.getCount() * 64;
                             getChests().addEmeralds(loc, emeralds);
                             getDryData().addEmeralds(emeralds);
                             dryDataUpdated = true;
